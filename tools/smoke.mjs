@@ -189,7 +189,26 @@ await page.evaluate(() => { themeMode = "light"; applyTheme(); setView("reagents
 const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
 check(overflow <= 1, "窄屏（860px）无横向溢出（溢出 " + overflow + "px）");
 
-/* ---------------------------- 10. 截图（演示模式，不碰 localStorage） ---------------------------- */
+/* ---------------------------- 10. 老版本数据兼容 ---------------------------- */
+await page.setViewport({ width: 1440, height: 950 });
+await page.evaluate(old => { localStorage.setItem(KEY, old); }, JSON.stringify({
+  mice: [{ id: "a1", strain: "BALB/c", sex: "雌", cages: 2, perCage: 5, purpose: "老数据兼容测试", status: "在养" }],
+  breeding: [], reagents: [], consumables: [], logs: [],
+  settings: { expWarn: 30, gestDays: 20, weanDays: 21, snapshots: 7 },  // v2 没有 usageDays / reorderDays / theme
+  meta: { v: 2, updated: 1700000000000 }
+}));
+await page.reload({ waitUntil: "load" });
+await page.waitForFunction(() => typeof window.render === "function");
+const migrated = await page.evaluate(() => ({
+  mice: state.mice.length, usage: state.settings.usageDays, reorder: state.settings.reorderDays,
+  theme: state.settings.theme, v: state.meta.v,
+  shown: document.querySelector("#content").textContent.indexOf("老数据兼容测试") >= 0
+}));
+check(migrated.mice === 1 && migrated.usage === 90 && migrated.reorder === 30 && migrated.theme === "auto",
+  "v2 老数据自动补上新设置（升级到 v" + migrated.v + "）");
+check(migrated.shown, "老数据在概览里正常显示");
+
+/* ---------------------------- 11. 截图（演示模式，不碰 localStorage） ---------------------------- */
 await page.setViewport({ width: 1440, height: 950 });
 const shot = await browser.newPage();
 await shot.setViewport({ width: 1440, height: 950 });
