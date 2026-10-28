@@ -22,6 +22,18 @@ let REV = 0;                            // 服务器修订号（用于增量拉�
 let SYNCED = null;                      // 最后一次同步成功时的数据快照
 let syncTimer = null, syncing = false, lastSyncAt = 0, lastSyncErr = "", pollTimer = null;
 let pendingRender = false;
+/* CSRF：写操作必须带登录时下发的令牌（防跨站伪造请求） */
+let CSRF = "";
+const _rawFetch = window.fetch.bind(window);
+function apiFetch(url, opts) {
+  opts = opts || {};
+  const m = String(opts.method || "GET").toUpperCase();
+  if (m !== "GET" && CSRF && String(url).indexOf("/api/login") < 0) {
+    opts.headers = Object.assign({}, opts.headers || {}, { "X-CSRF-Token": CSRF });
+  }
+  return _rawFetch(url, opts);
+}
+
 
 const isAdmin = () => !!(MY_PERMS && MY_PERMS.manageUsers);
 const canWrite = () => {
@@ -117,7 +129,7 @@ function showAuth(opts) {
       const oldPw = $("#authOld").value, a = $("#authNew").value, b = $("#authNew2").value;
       if (a !== b) { $("#authErr").textContent = "两次输入的新密码不一样"; return; }
       showAuth(Object.assign({}, o, { forceChange: true, busy: true }));
-      const r = await fetch("/api/password", {
+      const r = await apiFetch("/api/password", {
         method: "POST", headers: { "content-type": "application/json" },
         body: JSON.stringify({ old: oldPw, new: a })
       });
@@ -135,7 +147,7 @@ function showAuth(opts) {
       btn.disabled = true; btn.textContent = "登录中…";
       $("#authErr").textContent = "";
       try {
-        const r = await fetch("/api/login", {
+        const r = await apiFetch("/api/login", {
           method: "POST", headers: { "content-type": "application/json" },
           body: JSON.stringify({ username: u, password: p })
         });
@@ -145,7 +157,7 @@ function showAuth(opts) {
           btn.disabled = false; btn.textContent = "登录";
           return;
         }
-        ME = j.user; MY_PERMS = j.perms;
+        ME = j.user; MY_PERMS = j.perms; if (j.csrf) CSRF = j.csrf;
         await enterApp();
       } catch (err2) {
         $("#authErr").textContent = "连不上服务器：检查电脑和网络，或问管理员服务是否在运行";
@@ -162,15 +174,15 @@ function hideAuth() {
 }
 
 async function enterApp() {
-  const r = await fetch("/api/bootstrap");
+  const r = await apiFetch("/api/bootstrap");
   if (r.status === 401) { ME = null; showAuth({ error: "登录已过期，请重新登录" }); return; }
   const j = await r.json().catch(() => null);
   /* 首次登录未改密码：服务端不让读数据，必须先改密码 */
   if (r.status === 403 && j && j.mustChangePassword) { showAuth({ forceChange: true }); return; }
   if (!j || !j.data) { showAuth({ error: (j && j.error) || "服务器返回异常" }); return; }
-  if (j.user && j.user.mustChangePassword) { ME = j.user; MY_PERMS = j.perms; showAuth({ forceChange: true }); return; }
+  if (j.user && j.user.mustChangePassword) { ME = j.user; MY_PERMS = j.perms; if (j.csrf) CSRF = j.csrf; showAuth({ forceChange: true }); return; }
   ME = j.user || ME;
-  MY_PERMS = j.perms || MY_PERMS;
+  MY_PERMS = j.perms || MY_PERMS; if (j.csrf) CSRF = j.csrf;
   state = migrate(j.data);
   REV = j.rev;
   SYNCED = snapshotOf(state);
@@ -210,7 +222,7 @@ function paintIdentity() {
 async function remoteLogout(silent) {
   if (!silent && hasLocal() && !confirm("还有改动没同步到服务器，确定退出？")) return;
   try { await flush(); } catch (e) { /* ignore */ }
-  try { await fetch("/api/logout", { method: "POST" }); } catch (e) { /* ignore */ }
+  try { await apiFetch("/api/logout", { method: "POST" }); } catch (e) { /* ignore */ }
   ME = null; MY_PERMS = null; SYNCED = null; REV = 0;
   if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
   state = blankState();
@@ -234,7 +246,7 @@ function changeMyPassword() {
   const b = prompt("再输一次新密码：");
   if (b === null) return;
   if (a !== b) { toast("两次输入不一样", true); return; }
-  fetch("/api/password", {
+  apiFetch("/api/password", {
     method: "POST", headers: { "content-type": "application/json" },
     body: JSON.stringify({ old: oldPw, new: a })
   }).then(async r => {
@@ -259,7 +271,7 @@ async function flush(keepalive) {
   if (!Object.keys(patch).length) { SYNCED = snap; return true; }
   syncing = true;
   try {
-    const r = await fetch("/api/sync", {
+    const r = await apiFetch("/api/sync", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ baseRev: REV, patch }),
@@ -300,7 +312,7 @@ async function flush(keepalive) {
 /* 冲突后整库重拉：服务端版本为准，避免本地反复用旧 _v 重试 */
 async function pullAll() {
   try {
-    const r = await fetch("/api/changes?since=0");
+    const r = await apiFetch("/api/changes?since=0");
     if (r.status === 401) { sessionLost(); return; }
     const j = await r.json().catch(() => null);
     if (!j || !j.data) return;
@@ -350,7 +362,7 @@ async function poll(force) {
   if (hasLocal()) await flush();
   if (hasLocal()) return;                 // 本地还没存完，先别动远端数据
   try {
-    const r = await fetch(`/api/changes?since=${REV}`);
+    const r = await apiFetch(`/api/changes?since=${REV}`);
     if (r.status === 401) { sessionLost(); return; }
     const j = await r.json().catch(() => null);
     if (!j) return;
@@ -463,7 +475,7 @@ function viewUsers() {
       password: $("#nu-pw").value,
       role: $("#nu-role").value
     };
-    const r = await fetch("/api/users", {
+    const r = await apiFetch("/api/users", {
       method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body)
     });
     const j = await r.json().catch(() => ({}));
@@ -478,7 +490,7 @@ async function loadUsers() {
   const box = $("#userRows");
   if (!box) return;
   try {
-    const r = await fetch("/api/users");
+    const r = await apiFetch("/api/users");
     if (!r.ok) { box.innerHTML = `<div class="muted">读取失败（HTTP ${r.status}）</div>`; return; }
     const j = await r.json();
     USERS = j.users || [];
@@ -535,7 +547,7 @@ function renderUsers(stats) {
     }
     if (b.dataset.act === "u-del") {
       if (!confirm("删除账号后不能恢复，该用户的历史操作记录会保留。确定删除？")) return;
-      const r = await fetch("/api/users/" + uid, { method: "DELETE" });
+      const r = await apiFetch("/api/users/" + uid, { method: "DELETE" });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) { toast(j.error || "删除失败", true); return; }
       toast("账号已删除");
@@ -550,7 +562,7 @@ function renderUsers(stats) {
 }
 
 async function userPatch(uid, body, okMsg) {
-  const r = await fetch("/api/users/" + uid, {
+  const r = await apiFetch("/api/users/" + uid, {
     method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify(body)
   });
   const j = await r.json().catch(() => ({}));
@@ -592,7 +604,7 @@ async function loadAudit() {
   try {
     const q = new URLSearchParams({ limit: AUDIT_LIMIT });
     if (AUDIT_USER) q.set("user", AUDIT_USER);
-    const r = await fetch("/api/audit?" + q.toString());
+    const r = await apiFetch("/api/audit?" + q.toString());
     if (!r.ok) { box.innerHTML = `<div class="muted">读取失败（HTTP ${r.status}）</div>`; return; }
     const j = await r.json();
     const list = j.entries || [];
@@ -616,7 +628,7 @@ async function bootRemote() {
   if (DEMO) return;
   if (location.protocol === "file:") return;      // 双击打开：就是离线版
   let r;
-  try { r = await fetch("/api/me", { headers: { accept: "application/json" } }); }
+  try { r = await apiFetch("/api/me", { headers: { accept: "application/json" } }); }
   catch (e) { return; }                            // 打不开就按离线处理
   const ct = String(r.headers.get("content-type") || "");
   if (ct.indexOf("json") < 0) return;              // GitHub Pages 之类静态托管 → 离线版
@@ -627,7 +639,7 @@ async function bootRemote() {
   paintIdentity();
   if (r.status === 401) { showAuth({}); return; }
   if (j.user && j.user.mustChangePassword) {
-    ME = j.user; MY_PERMS = j.perms;
+    ME = j.user; MY_PERMS = j.perms; if (j.csrf) CSRF = j.csrf;
     showAuth({ forceChange: true });
     return;
   }

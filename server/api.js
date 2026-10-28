@@ -7,7 +7,7 @@
  *   - 权限在服务端强制校验，前端隐藏按钮只是顺手
  *   - 首次登录（mustChangePassword）只允许 /api/me、/api/password、/api/logout
  * ========================================================================== */
-const { PERM, ROLES, ROLE_LABEL } = require("./auth");
+const { PERM, ROLES, ROLE_LABEL, VALID_PERMS } = require("./auth");
 
 const COOKIE = "sm_sid";
 const MAX_BODY = 2 * 1024 * 1024;
@@ -59,15 +59,15 @@ function readBody(req, limit) {
 function createApi(ctx) {
   const { store, auth, version } = ctx;
 
-  const can = (user, perm) => !!user && (PERM[perm] || []).indexOf(user.role) >= 0;
-  const permsOf = user => ({
-    readData: can(user, "readData"),
-    writeData: can(user, "writeData"),
-    writeSettings: can(user, "writeSettings"),
-    manageUsers: can(user, "manageUsers"),
-    viewAudit: can(user, "viewAudit"),
-    backup: can(user, "backup")
-  });
+  const can = (user, perm) => auth.can(user, perm);
+  const permsOf = user => {
+    const list = auth.permsOf(user);
+    const out = {};
+    VALID_PERMS.forEach(k => { out[k] = list.indexOf(k) >= 0; });
+    return out;
+  };
+  const CSRF_EXEMPT = ["/api/login", "/api/logout"];
+  const WRITE_METHODS = ["POST", "PUT", "PATCH", "DELETE"];
 
   function clientIp(req) {
     const xff = req.headers["x-forwarded-for"];
@@ -114,7 +114,8 @@ function createApi(ctx) {
         if (!user) { json(res, 401, { server: true, login: true, error: "未登录" }); return true; }
         json(res, 200, {
           server: true, version, rev: store.rev,
-          user: auth.publicUser(user), perms: permsOf(user)
+          user: auth.publicUser(user), perms: permsOf(user),
+          csrf: auth.csrfOf(parseCookies(req)[COOKIE])
         });
         return true;
       }
@@ -127,12 +128,14 @@ function createApi(ctx) {
           json(res, r.code === "locked" ? 429 : 401, { error: r.error, code: r.code });
           return true;
         }
-        const token = auth.createSession(r.user, ip);
+        const sess = auth.createSession(r.user, ip);
+        const token = sess.token;
         store.audit({ user: r.user.username, ip, action: "login", detail: ROLE_LABEL[r.user.role] });
         res.setHeader("Set-Cookie", sessionCookie(req, token, 7 * 86400));
         json(res, 200, {
           server: true, version, rev: store.rev,
-          user: auth.publicUser(r.user), perms: permsOf(r.user)
+          user: auth.publicUser(r.user), perms: permsOf(r.user),
+          csrf: sess.csrf
         });
         return true;
       }
@@ -150,6 +153,16 @@ function createApi(ctx) {
       const user = userOf(req);
       if (!user) { json(res, 401, { error: "未登录或登录已过期", login: true }); return true; }
 
+      /* CSRF：写操作必须带 X-CSRF-Token，值与本次会话绑定 */
+      if (WRITE_METHODS.indexOf(method) >= 0 && CSRF_EXEMPT.indexOf(pathname) < 0) {
+        const tk = parseCookies(req)[COOKIE];
+        if (!auth.verifyCsrf(tk, req.headers["x-csrf-token"])) {
+          store.audit({ user: user.username, ip, action: "csrf-reject", detail: method + " " + pathname });
+          json(res, 403, { error: "CSRF 令牌缺失或已过期，请刷新页面重新登录", code: "csrf" });
+          return true;
+        }
+      }
+
       if (user.mustChangePassword && SAFE_GET.indexOf(pathname) < 0) {
         json(res, 403, { error: "首次登录请先修改密码", mustChangePassword: true });
         return true;
@@ -161,9 +174,10 @@ function createApi(ctx) {
         if (!r.ok) { json(res, 400, { error: r.error }); return true; }
         store.audit({ user: user.username, ip, action: "password" });
         // 自己改密码会清掉所有会话，这里重新发一个，避免刚改完就被踢
-        const token = auth.createSession(user, ip);
+        const sess2 = auth.createSession(user, ip);
+        const token = sess2.token;
         res.setHeader("Set-Cookie", sessionCookie(req, token, 7 * 86400));
-        json(res, 200, { ok: true });
+        json(res, 200, { ok: true, csrf: sess2.csrf });
         return true;
       }
 

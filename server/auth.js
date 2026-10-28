@@ -21,6 +21,7 @@ const PERM = {
   viewAudit: ["admin"],
   backup: ["admin"]
 };
+const VALID_PERMS = Object.keys(PERM);
 const SESSION_DAYS = 7;
 const MAX_FAILS = 6;
 const LOCK_MS = 5 * 60 * 1000;
@@ -109,7 +110,9 @@ class Auth {
     const now = Date.now();
     let removed = 0;
     for (const k of Object.keys(this.sessions)) {
-      if (!this.sessions[k] || this.sessions[k].exp < now) { delete this.sessions[k]; removed++; }
+      const rec = this.sessions[k];
+      // 缺 csrf 的是升级前的旧会话：作废，让用户重新登录（否则写操作会 403 而不是 401）
+      if (!rec || rec.exp < now || !rec.csrf) { delete this.sessions[k]; removed++; }
     }
     if (removed) this._dirty = true;
   }
@@ -141,7 +144,8 @@ class Auth {
     return {
       id: u.id, username: u.username, name: u.name || u.username, role: u.role,
       disabled: !!u.disabled, mustChangePassword: !!u.mustChangePassword,
-      createdAt: u.createdAt, lastLogin: u.lastLogin, lastIp: u.lastIp
+      createdAt: u.createdAt, lastLogin: u.lastLogin, lastIp: u.lastIp,
+      perms: Array.isArray(u.perms) ? u.perms.slice() : null
     };
   }
 
@@ -153,6 +157,24 @@ class Auth {
   findById(id) { return this.users.find(u => u.id === id) || null; }
 
   list() { return this.users.map(u => this.publicUser(u)); }
+
+  /* 有效权限 = 角色的 perms 覆盖（没设置就用角色默认值） */
+  permsOf(user) {
+    if (!user || !user.role) return [];
+    // PERM 是「权限 → 允许的角色」，这里反查角色默认拥有的权限
+    const base = VALID_PERMS.filter(p => (PERM[p] || []).indexOf(user.role) >= 0);
+    if (!Array.isArray(user.perms)) return base.slice();
+    const want = user.perms.filter(p => VALID_PERMS.indexOf(p) >= 0);
+    const eff = VALID_PERMS.filter(p => want.indexOf(p) >= 0);
+    // 管理员必须保留 manageUsers，避免把自己锁在外面
+    if (user.role === "admin" && eff.indexOf("manageUsers") < 0) eff.push("manageUsers");
+    return eff;
+  }
+
+  can(user, perm) {
+    if (!user || VALID_PERMS.indexOf(perm) < 0) return false;
+    return this.permsOf(user).indexOf(perm) >= 0;
+  }
 
   adminCount() { return this.users.filter(u => u.role === "admin" && !u.disabled).length; }
 
@@ -194,11 +216,12 @@ class Auth {
 
   createSession(user, ip) {
     const token = crypto.randomBytes(32).toString("base64url");
+    const csrf = crypto.randomBytes(24).toString("base64url");
     const now = Date.now();
-    this.sessions[sha256(token)] = { uid: user.id, exp: now + SESSION_DAYS * 86400000, ip, at: now };
+    this.sessions[sha256(token)] = { uid: user.id, exp: now + SESSION_DAYS * 86400000, ip, at: now, csrf };
     this._pruneSessions();
     this._saveSessions();
-    return token;
+    return { token, csrf };
   }
 
   /* 每次请求调用：返回 user 或 null；顺带续期 */
@@ -216,6 +239,20 @@ class Auth {
       this._dirty = true;
     }
     return u;
+  }
+
+  /* 会话绑定的 CSRF 令牌：写操作必须带回来 */
+  csrfOf(token) {
+    if (!token) return "";
+    const s = this.sessions[sha256(token)];
+    return (s && s.csrf) || "";
+  }
+
+  verifyCsrf(token, given) {
+    const want = this.csrfOf(token);
+    const got = String(given || "");
+    if (!want || !got || want.length !== got.length) return false;
+    try { return crypto.timingSafeEqual(Buffer.from(want), Buffer.from(got)); } catch (e) { return false; }
   }
 
   destroySession(token) {
@@ -261,6 +298,7 @@ class Auth {
       saltHash: hashPassword(password), mustChangePassword: true,
       disabled: false, createdAt: new Date().toISOString(), lastLogin: null, lastIp: null
     };
+    if (Array.isArray(arguments[0] && arguments[0].perms)) u.perms = arguments[0].perms.filter(p => VALID_PERMS.indexOf(p) >= 0);
     this.users.push(u);
     this._saveUsers();
     return { ok: true, user: this.publicUser(u) };
@@ -284,6 +322,15 @@ class Auth {
       u.disabled = dis;
       if (dis) this.destroyUserSessions(u.id);
     }
+    if (patch.perms !== undefined) {
+      if (patch.perms === null) { delete u.perms; }
+      else if (!Array.isArray(patch.perms)) return { ok: false, error: "权限格式不对" };
+      else {
+        const bad = patch.perms.filter(p => VALID_PERMS.indexOf(p) < 0);
+        if (bad.length) return { ok: false, error: "不认识的权限：" + bad.join(",") };
+        u.perms = patch.perms.slice();
+      }
+    }
     if (patch.password !== undefined) {
       const bad = passwordProblem(patch.password, u.username);
       if (bad) return { ok: false, error: bad };
@@ -306,4 +353,4 @@ class Auth {
   }
 }
 
-module.exports = { Auth, PERM, ROLES, ROLE_LABEL, hashPassword, verifyPassword, passwordProblem };
+module.exports = { Auth, PERM, ROLES, ROLE_LABEL, VALID_PERMS, hashPassword, verifyPassword, passwordProblem };
