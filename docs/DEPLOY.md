@@ -136,6 +136,38 @@ cloudflared tunnel run --url http://localhost:8787 labmgmt
 
 ---
 
+### 2.4 共享服务器：只开了 SSH 端口怎么办
+
+学校 / 医院 / 机房的共享服务器通常**只对外开一个 SSH 端口**，其他端口一律进不来（拿 `Test-NetConnection 服务器 18447` 试一下，返回 `False` 就是这个情况）。不用求管理员开端口也能用，走 SSH 隧道：
+
+```bash
+# 1) 服务器上：克隆 + 一键安装（systemd 用户服务，不需要 sudo）
+git clone https://github.com/Yu-Qiao-sjtu/lab-mgmt
+cd lab-mgmt
+bash deploy/install.sh                  # 默认 18447 端口，只监听 127.0.0.1
+```
+
+```bash
+# 2) 每个人本机：建隧道（-L 本地端口:127.0.0.1:服务器端口）
+ssh -N -L 18447:127.0.0.1:18447 用户名@服务器
+# 然后浏览器打开 http://localhost:18447
+```
+
+嫌命令麻烦，就用现成的双击脚本：`deploy/tunnel/lab-mgmt-windows.bat`（Windows）/ `lab-mgmt-tunnel.sh`（macOS、Linux）——改开头 4 行服务器信息，双击即连并自动开浏览器。
+
+要点：
+
+- 服务**只绑 127.0.0.1**，不对外多开一个口子，符合共享服务器的管理约定；
+- SSH 断了网页就断，重新双击脚本即可，数据在服务器上不会丢；
+- 退出登录后服务是否继续跑，取决于 `loginctl enable-linger 用户名`（`deploy/install.sh` 会自动尝试，失败会提示找管理员，或退回 `@reboot` crontab）；
+- 端口冲突很常见（别人的 8787）：`PORT=18500 bash deploy/install.sh` 换一个，隧道两边端口号保持一致即可；
+- 数据默认放在仓库**同级**目录 `lab-mgmt-data/`，`git pull` 升级不会碰它；
+- 想升级：`cd lab-mgmt && git pull && systemctl --user restart lab-mgmt`。
+
+之后如果管理员愿意开端口或做 nginx 反代，把这个服务从 `127.0.0.1` 改成局域网地址即可，账号权限那套东西完全不用改。
+
+---
+
 ## 3. 账号与权限
 
 | 角色 | 看数据 | 录入 / 编辑 / 删除 | 导入表格 | 改全局设置 | 管账号 | 操作日志 | 全库备份 / 恢复 |

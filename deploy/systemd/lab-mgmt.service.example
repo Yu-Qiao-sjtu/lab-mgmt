@@ -1,0 +1,35 @@
+# 实验室管理台 · systemd 用户级服务模板
+#
+# 用法（在 Linux 服务器上）：
+#   mkdir -p ~/.config/systemd/user
+#   sed -e "s#__APP_DIR__#$HOME/lab-mgmt#g" \
+#       -e "s#__DATA_DIR__#$HOME/lab-mgmt-data#g" \
+#       -e "s#__NODE_BIN__#$(command -v node)#g" \
+#       -e "s#__PORT__#18447#g" \
+#       deploy/systemd/lab-mgmt.service.example > ~/.config/systemd/user/lab-mgmt.service
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now lab-mgmt
+#   loginctl enable-linger "$USER"     # 退出登录后服务仍然存活（部分服务器需要管理员）
+#   systemctl --user status lab-mgmt
+#
+# 只监听 127.0.0.1：公网/局域网访问需要 SSH 隧道或反向代理，见 docs/DEPLOY.md。
+
+[Unit]
+Description=Lab Management Server (lab-mgmt)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=__APP_DIR__
+Environment=NODE_ENV=production
+Environment=DATA_DIR=__DATA_DIR__
+Environment=PORT=__PORT__
+Environment=HOST=127.0.0.1
+ExecStart=__NODE_BIN__ server/index.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=15
+UMask=0077
+
+[Install]
+WantedBy=default.target
