@@ -14,7 +14,7 @@ const path = require("path");
 
 const SRC = path.join(__dirname, "src");
 const OUT = path.join(__dirname, "index.html");
-const PARTS = ["head.html", "body.html", "s1.js", "s2.js", "s3.js", "s4.js", "s5.js", "s6.js"];
+const PARTS = ["head.html", "body.html", "s1.js", "remote.js", "s2.js", "s3.js", "s4.js", "s5.js", "s6.js"];
 
 const read = f => fs.readFileSync(path.join(SRC, f), "utf8").replace(/\r\n/g, "\n");
 

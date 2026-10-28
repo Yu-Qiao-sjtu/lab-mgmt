@@ -314,8 +314,10 @@ function applyTheme() {
 function cycleTheme() {
   themeMode = THEMES[(THEMES.indexOf(themeMode) + 1) % THEMES.length];
   try { localStorage.setItem(THEME_KEY, themeMode); } catch (e) { /* ignore */ }
-  state.settings.theme = themeMode;   // 跟着 JSON 备份走，换机器也能带上
-  save();
+  if (MODE !== "server") {
+    state.settings.theme = themeMode;   // 跟着 JSON 备份走，换机器也能带上
+    save();
+  }
   applyTheme();
   toast("主题：" + THEME_LABEL[themeMode]);
 }
@@ -328,13 +330,16 @@ const TITLES = {
   reagents: ["试剂库存", "库存 · 位置 · 有效期 · 成本"],
   consumables: ["耗材库存", "库存 · 安全库存 · 成本"],
   logs: ["出入库流水", "变动记录 · 项目成本"],
-  data: ["数据 · 设置", "备份 · 导入导出 · 参数"]
+  data: ["数据 · 设置", "备份 · 导入导出 · 参数"],
+  users: ["账号管理", "新增 · 停用 · 改角色 · 重置密码"],
+  audit: ["操作日志", "谁在什么时候改了哪些数据"]
 };
 const VIEWS = {
   dash: viewDash, mice: viewMice, breeding: viewBreeding,
   reagents: () => viewStock("reagents"),
   consumables: () => viewStock("consumables"),
-  logs: viewLogs, data: viewData
+  logs: viewLogs, data: viewData,
+  users: viewUsers, audit: viewAudit
 };
 
 function setView(v) {
@@ -407,3 +412,6 @@ if (DEMO) {
 
 render();
 paintSaveInfo();
+
+/* 探测是否由多用户服务器提供：是 → 弹登录；不是 → 保持离线版行为 */
+bootRemote();

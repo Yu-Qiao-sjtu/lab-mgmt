@@ -21,6 +21,8 @@ jobs:
             echo "index.html 引用了外部资源，破坏离线承诺"; exit 1
           fi
           echo OK
+      - name: 多用户服务器自测（登录 / 权限 / 并发 / 审计 / 重启）
+        run: node tools/server-smoke.mjs
       - name: 上传 index.html 作为构建产物
         uses: actions/upload-artifact@v4
         with:

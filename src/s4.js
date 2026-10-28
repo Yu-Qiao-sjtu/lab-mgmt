@@ -135,6 +135,7 @@ function viewData() {
   const bytes = new Blob([JSON.stringify(state)]).size;
   const snaps = snapshotInfo();
   const snapValue = (num(state.settings.snapshots) || 7);
+  const SERVER = MODE === "server";
   const kindOpts = [["mice", "小鼠记录"], ["breeding", "繁育记录"], ["reagents", "试剂"], ["consumables", "耗材"]]
     .map(([k, l]) => `<option value="${k}"${importState.kind === k ? " selected" : ""}>${l}</option>`).join("");
 
@@ -143,7 +144,9 @@ function viewData() {
       <div class="panel">
         <h3>备份与恢复 <em>建议每周导出一次</em></h3>
         <div class="body hintbox">
-          数据保存在本机浏览器里（<code>localStorage</code>），换电脑、换浏览器、清浏览器数据都不会自动带走，所以要用 JSON 文件留底。
+          ${SERVER
+      ? '数据保存在<b>服务器</b>（<code>data/db.json</code>），所有登录的人看到同一份；服务器每天自动留一份备份，保留 30 天。这里的 JSON 是当前全量快照，适合归档或迁移。'
+      : '数据保存在本机浏览器里（<code>localStorage</code>），换电脑、换浏览器、清浏览器数据都不会自动带走，所以要用 JSON 文件留底。'}
           <div style="margin:12px 0;display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn primary" data-act="bk">⬇ 下载 JSON 备份</button>
             <button class="btn" data-act="rs">⬆ 从 JSON 恢复</button>
@@ -153,7 +156,18 @@ function viewData() {
         </div>
       </div>
 
-      <div class="panel">
+      ${SERVER ? `<div class="panel">
+        <h3>服务器状态 <em>多人共享</em></h3>
+        <div class="body">
+          <div class="items">
+            <div class="row"><b>当前账号</b><span class="r">${esc(myName())}（${esc(ROLE_TEXT[ME.role] || "")}）</span></div>
+            <div class="row"><b>服务器</b><span class="r">${esc(location.host)}</span></div>
+            <div class="row"><b>数据版本</b><span class="r">rev ${REV} · ${hasLocal() ? "有改动待保存" : "已同步"}</span></div>
+            <div class="row"><b>最近同步</b><span class="r">${lastSyncAt ? esc(fmtTime(lastSyncAt)) : "—"}</span></div>
+          </div>
+          <div class="hintbox" style="margin-top:10px">其他人在别的电脑上改动，这里 6 秒内自动跟上；同一条记录两人同时改，以后保存的为准，日志里能查到是谁改的。</div>
+        </div>
+      </div>` : `<div class="panel">
         <h3>每日自动快照 <em>每天第一次保存时自动留一份，最多 ${snapValue} 份（占 ${(snaps.bytes / 1024).toFixed(1)} KB）</em></h3>
         <div class="body">
           ${snaps.list.length ? `<div class="items">${snaps.list.map(s => `<div class="row">
@@ -163,7 +177,7 @@ function viewData() {
           </div>`).join("")}</div>` : '<div class="muted">还没有快照：改动一次数据后就会自动生成。</div>'}
           <div style="margin-top:10px"><button class="btn mini danger" data-act="snap-clear">清空所有快照</button></div>
         </div>
-      </div>
+      </div>`}
     </div>
 
     <div class="panel">

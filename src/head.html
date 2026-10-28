@@ -209,5 +209,36 @@ th.sortable.on{color:var(--accent-d);background:#f0fdfa}
 [data-theme="dark"] .side{background:#070d18}
 [data-theme="dark"] .demo-bar{background:#33260a;border-color:#a16207;color:#fcd34d}
 [data-theme="dark"] .demo-bar a{color:#fcd34d}
+
+/* ---------- v3 追加：登录界面 / 用户标识 / 只读提示 ---------- */
+.hidden{display:none!important}
+.auth{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:radial-gradient(1200px 600px at 50% -10%,rgba(13,148,136,.28),transparent 70%),
+             linear-gradient(160deg,#0f172a,#111827 55%,#0b1220)}
+.auth-card{width:min(366px,100%);background:var(--card);border-radius:14px;padding:24px 22px;
+  box-shadow:0 24px 60px rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.16)}
+.auth-brand{font-size:17px;font-weight:700;letter-spacing:.5px}
+.auth-sub{margin:6px 0 16px;font-size:12.5px;color:var(--muted);line-height:1.65}
+.auth-card label{display:block;font-size:12.5px;color:#334155;font-weight:600;margin-bottom:11px}
+.auth-card input{display:block;width:100%;margin-top:5px;padding:9px 11px;border:1px solid var(--line);
+  border-radius:8px;background:#fff;font-weight:400}
+.auth-card button{width:100%;margin-top:6px;padding:9px 12px}
+.auth-err{min-height:17px;margin-top:9px;font-size:12.5px;color:var(--danger)}
+.auth-foot{margin-top:15px;padding-top:12px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);line-height:1.75}
+.auth-foot .mono{font-family:ui-monospace,Consolas,monospace}
+.auth-card a{color:var(--accent-d)}
+.userchip{display:flex;align-items:center;gap:4px;font-size:12.5px;margin-right:2px}
+.userchip .who{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.userchip .role{font-size:11px;padding:1px 7px;border-radius:99px;border:1px solid var(--line);background:#f8fafc;color:var(--muted)}
+.userchip .role.admin{color:#9a3412;background:#fff7ed;border-color:#fed7aa}
+.userchip .role.editor{color:var(--accent-d);background:#f0fdfa;border-color:#99f6e4}
+.ro-bar{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;padding:8px 12px;border-radius:8px;font-size:12.5px;line-height:1.6}
+[data-theme="dark"] .auth-card{background:#111a2b;border-color:#22304a}
+[data-theme="dark"] .auth-card label{color:#a9b8cf}
+[data-theme="dark"] .auth-card input{background:#0b1220;color:var(--ink);border-color:var(--line)}
+[data-theme="dark"] .userchip .role{background:#16223a;border-color:#26364f;color:#c7d3e6}
+[data-theme="dark"] .userchip .role.admin{background:#33260a;border-color:#a16207;color:#fcd34d}
+[data-theme="dark"] .userchip .role.editor{background:#0a2b2a;border-color:#0f766e;color:#5eead4}
+[data-theme="dark"] .ro-bar{background:#0b2545;border-color:#1e40af;color:#bfdbfe}
 </style>
 </head>

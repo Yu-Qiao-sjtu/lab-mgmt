@@ -10,6 +10,8 @@
       <button data-view="consumables">🧴 耗材</button>
       <button data-view="logs">📥 出入库流水</button>
       <button data-view="data">💾 数据 · 设置</button>
+      <button data-view="users" data-admin="1" style="display:none">👥 账号管理</button>
+      <button data-view="audit" data-admin="1" style="display:none">📋 操作日志</button>
     </nav>
     <div class="side-foot" id="saveInfo">尚无数据</div>
   </aside>
@@ -17,12 +19,16 @@
     <header class="topbar">
       <h1 id="viewTitle">概览</h1>
       <div class="topActions" id="topActions"></div>
+      <div id="userChip" class="userchip hidden"></div>
       <button class="btn mini ghost" id="btn-theme" type="button" title="切换主题">🌓</button>
     </header>
     <div id="demoBar" class="demo-bar" style="display:none;margin:14px 22px 0"></div>
+    <div id="roBar" class="ro-bar" style="display:none;margin:14px 22px 0"></div>
     <section id="content"></section>
   </main>
 </div>
+
+<div id="authScreen" class="auth hidden"></div>
 
 <div id="modal" class="overlay hidden">
   <div class="dialog">

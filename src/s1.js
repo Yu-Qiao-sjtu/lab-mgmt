@@ -161,6 +161,7 @@ function save() {
   if (DEMO) { paintSaveInfo(); return true; } // 演示模式：只在内存里改，绝不写入本机存储
   state.meta.updated = Date.now();
   if (!state.meta.createdAt) state.meta.createdAt = state.meta.updated;
+  if (MODE === "server") { queueSync(); paintSaveInfo(); return true; } // 多用户模式：推到服务器
   try {
     localStorage.setItem(KEY, JSON.stringify(state));
     dailySnapshot();
@@ -180,6 +181,17 @@ function paintSaveInfo() {
   if (DEMO) {
     el.textContent = "演示模式：示例数据不保存\n下载 index.html 双击即可录入真实数据";
     el.style.whiteSpace = "pre-line";
+    return;
+  }
+  if (MODE === "server") {
+    el.style.whiteSpace = "pre-line";
+    if (!ME) { el.textContent = "未登录\n输入账号密码后开始使用"; return; }
+    const dirty = hasLocal();
+    const t2 = lastSyncAt ? new Date(lastSyncAt) : null;
+    const when = t2 ? `${pad2(t2.getHours())}:${pad2(t2.getMinutes())}` : "";
+    el.textContent = dirty
+      ? (syncing ? "正在保存到服务器…" : (lastSyncErr || "有改动待保存…"))
+      : `已同步到服务器 ${when}\n${myName()}（${ROLE_TEXT[ME.role] || ME.role}）· Ctrl+Z 撤销`;
     return;
   }
   el.textContent = t
