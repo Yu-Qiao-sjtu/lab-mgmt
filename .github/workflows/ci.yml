@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: src/ 与 index.html 是否一致（含语法 / 标签 / 离线校验）
+        run: node build.js --check
+      - name: 单文件里不允许出现外部请求
+        run: |
+          if grep -Eq '(src|href)="https?://' index.html; then
+            echo "index.html 引用了外部资源，破坏离线承诺"; exit 1
+          fi
+          echo OK
+      - name: 上传 index.html 作为构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: index.html
+          path: index.html

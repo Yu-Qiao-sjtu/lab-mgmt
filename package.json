@@ -1,0 +1,18 @@
+{
+  "name": "lab-mgmt",
+  "version": "2.1.0",
+  "description": "实验室管理台：小鼠 / 繁育 / 试剂 / 耗材 / 出入库 / 成本，单文件离线 Web 应用",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "build": "node build.js",
+    "check": "node build.js --check",
+    "smoke": "node tools/smoke.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.16.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

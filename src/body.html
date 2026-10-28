@@ -1,0 +1,44 @@
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">🐭 实验室管理台<small>小鼠 · 繁育 · 试剂 · 耗材</small></div>
+    <nav id="nav">
+      <button data-view="dash" class="active">📊 概览</button>
+      <button data-view="mice">🐭 小鼠统计</button>
+      <button data-view="breeding">🐣 繁育台账</button>
+      <button data-view="reagents">🧪 试剂</button>
+      <button data-view="consumables">🧴 耗材</button>
+      <button data-view="logs">📥 出入库流水</button>
+      <button data-view="data">💾 数据 · 设置</button>
+    </nav>
+    <div class="side-foot" id="saveInfo">尚无数据</div>
+  </aside>
+  <main>
+    <header class="topbar">
+      <h1 id="viewTitle">概览</h1>
+      <div class="topActions" id="topActions"></div>
+      <button class="btn mini ghost" id="btn-theme" type="button" title="切换主题">🌓</button>
+    </header>
+    <div id="demoBar" class="demo-bar" style="display:none;margin:14px 22px 0"></div>
+    <section id="content"></section>
+  </main>
+</div>
+
+<div id="modal" class="overlay hidden">
+  <div class="dialog">
+    <div class="dhead"><h3 id="mTitle">编辑</h3><button class="x" type="button" onclick="closeModal()">✕</button></div>
+    <form id="mForm" autocomplete="off">
+      <div class="dbody" id="mBody"></div>
+      <div class="dfoot">
+        <span class="hint" id="mHint"></span>
+        <button type="button" class="btn" onclick="closeModal()">取消</button>
+        <button type="submit" class="btn primary">保存</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="printArea"></div>
+<div id="toast"></div>
+
+<script>

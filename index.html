@@ -132,27 +132,108 @@ tfoot td{background:#fafbfc;font-weight:600;border-top:2px solid var(--line)}
   .dbody{grid-template-columns:1fr}
   .grid2{grid-template-columns:1fr}
 }
+/* ---------- v2 追加：排序表头 / 欢迎卡 / 设置行 / 笼牌版式 ---------- */
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{color:var(--accent-d);background:#f1f5f9}
+th.sortable.on{color:var(--accent-d);background:#f0fdfa}
+.welcome .body h2{margin:2px 0 6px;font-size:16px}
+.welcome .body p{margin:0 0 12px}
+.setting{display:flex;align-items:center;gap:8px;margin:8px 0;flex-wrap:wrap}
+.setting>span{min-width:130px;color:#334155;font-weight:600;font-size:12.5px}
+.setting input{width:104px;padding:6px 8px;border:1px solid var(--line);border-radius:8px}
+.setting em{font-style:normal;font-size:11.5px;color:var(--muted)}
+.print-h{font-family:"Microsoft YaHei","Segoe UI",sans-serif;margin:0 0 6mm}
+.dfoot .total{font-weight:700;color:var(--accent-d)}
+
+@page{size:A4;margin:12mm}
+@media print{
+  .cage-grid{display:grid;gap:6mm}
+  .cage-grid.l4{grid-template-columns:repeat(2,1fr)}
+  .cage-grid.l6{grid-template-columns:repeat(2,1fr)}
+  .cage-grid.l9{grid-template-columns:repeat(3,1fr)}
+  .cage-grid.l4 .cage{padding:8mm 6mm}
+  .cage-grid.l4 .cage .t{font-size:17pt}
+  .cage-grid.l4 .cage .g{font-size:11pt}
+  .cage-grid.l4 .cage .p{font-size:10pt}
+  .cage-grid.l6 .cage .t{font-size:14pt}
+  .cage-grid.l6 .cage .g{font-size:9.5pt}
+  .cage-grid.l6 .cage .p{font-size:8.5pt}
+  .cage-grid.l9 .cage{padding:4mm 3.5mm}
+  .cage-grid.l9 .cage .t{font-size:11.5pt}
+  .cage-grid.l9 .cage .g{font-size:8pt;margin-top:2mm;line-height:1.45}
+  .cage-grid.l9 .cage .p{font-size:7.5pt;margin-top:2mm;padding-top:1.5mm}
+  /* 打印永远是黑纸白字，不受深色主题影响 */
+  html,body,#printArea,.cage{color:#000!important;background:#fff!important}
+  .cage{border-color:#333!important}
+}
+
+/* ---------- v2.1 追加：小图表 / 演示条 / 深色主题 ---------- */
+.hbars{display:flex;flex-direction:column;gap:7px}
+.hrow{display:grid;grid-template-columns:104px 1fr 52px;gap:8px;align-items:center;font-size:12.5px}
+.hrow .hl{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hrow .hb{background:var(--line);border-radius:99px;height:10px;overflow:hidden}
+.hrow .hb i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.hrow .hv{text-align:right;font-variant-numeric:tabular-nums}
+.trend{display:flex;align-items:flex-end;gap:2px;height:104px;border-bottom:1px solid var(--line)}
+.trend .bar{flex:1;display:flex;flex-direction:column-reverse;min-height:0;border-radius:2px 2px 0 0;overflow:hidden}
+.trend .bar i{display:block;width:100%}
+.trend .i-in{background:var(--ok);opacity:.72}
+.trend .i-out{background:var(--accent)}
+.trend-x{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:4px}
+.lg{display:inline-block;width:9px;height:9px;border-radius:2px;margin:0 3px 0 6px;vertical-align:middle}
+.lg-in{background:var(--ok)} .lg-out{background:var(--accent)}
+.demo-bar{background:#fffbeb;border:1px solid #fde68a;color:#92400e;padding:8px 12px;border-radius:8px;margin-bottom:14px;font-size:12.5px;line-height:1.6}
+.demo-bar a{color:#92400e;font-weight:600}
+
+/* 深色主题：只覆盖颜色变量 + 少数写死颜色的容器 */
+[data-theme="dark"]{
+  --bg:#0b1220;--card:#111a2b;--ink:#e2e8f0;--muted:#93a4bd;--line:#22304a;
+  --accent:#14b8a6;--accent-d:#2dd4bf;--warn:#fbbf24;--danger:#f87171;--ok:#4ade80;
+  --shadow:0 1px 2px rgba(0,0,0,.45);
+}
+[data-theme="dark"] .topbar,[data-theme="dark"] .btn,[data-theme="dark"] .search,[data-theme="dark"] select,
+[data-theme="dark"] .dialog,[data-theme="dark"] .items .row,[data-theme="dark"] .field input,
+[data-theme="dark"] .field select,[data-theme="dark"] .field textarea{background:var(--card);color:var(--ink)}
+[data-theme="dark"] .panel h3,[data-theme="dark"] th,[data-theme="dark"] tfoot td{background:#16223a;color:#c7d3e6}
+[data-theme="dark"] tbody tr:hover{background:#16223a}
+[data-theme="dark"] th.sortable:hover,[data-theme="dark"] th.sortable.on{background:#16223a}
+[data-theme="dark"] .btn:hover{background:#1b2a44}
+[data-theme="dark"] .btn.ghost:hover,[data-theme="dark"] .dhead .x:hover{background:#1b2a44;color:var(--ink)}
+[data-theme="dark"] .field>span,[data-theme="dark"] .setting>span{color:#a9b8cf}
+[data-theme="dark"] .tag{background:#16223a;border-color:#26364f;color:#c7d3e6}
+[data-theme="dark"] .tag.ok{background:#0a2e1c;border-color:#166534;color:#6ee7a8}
+[data-theme="dark"] .tag.warn{background:#33260a;border-color:#a16207;color:#fcd34d}
+[data-theme="dark"] .tag.bad{background:#3a1414;border-color:#b91c1c;color:#fca5a5}
+[data-theme="dark"] .tag.info{background:#0a2b2a;border-color:#0f766e;color:#5eead4}
+[data-theme="dark"] .hintbox code{background:#16223a}
+[data-theme="dark"] .side{background:#070d18}
+[data-theme="dark"] .demo-bar{background:#33260a;border-color:#a16207;color:#fcd34d}
+[data-theme="dark"] .demo-bar a{color:#fcd34d}
 </style>
 </head>
+
 <body>
 <div class="app">
   <aside class="side">
-    <div class="brand">🐭 实验室管理台<small>小鼠 · 试剂 · 耗材</small></div>
+    <div class="brand">🐭 实验室管理台<small>小鼠 · 繁育 · 试剂 · 耗材</small></div>
     <nav id="nav">
       <button data-view="dash" class="active">📊 概览</button>
       <button data-view="mice">🐭 小鼠统计</button>
+      <button data-view="breeding">🐣 繁育台账</button>
       <button data-view="reagents">🧪 试剂</button>
       <button data-view="consumables">🧴 耗材</button>
       <button data-view="logs">📥 出入库流水</button>
-      <button data-view="data">💾 数据备份</button>
+      <button data-view="data">💾 数据 · 设置</button>
     </nav>
-    <div class="side-foot" id="saveInfo">未保存</div>
+    <div class="side-foot" id="saveInfo">尚无数据</div>
   </aside>
   <main>
     <header class="topbar">
       <h1 id="viewTitle">概览</h1>
       <div class="topActions" id="topActions"></div>
+      <button class="btn mini ghost" id="btn-theme" type="button" title="切换主题">🌓</button>
     </header>
+    <div id="demoBar" class="demo-bar" style="display:none;margin:14px 22px 0"></div>
     <section id="content"></section>
   </main>
 </div>
@@ -160,7 +241,7 @@ tfoot td{background:#fafbfc;font-weight:600;border-top:2px solid var(--line)}
 <div id="modal" class="overlay hidden">
   <div class="dialog">
     <div class="dhead"><h3 id="mTitle">编辑</h3><button class="x" type="button" onclick="closeModal()">✕</button></div>
-    <form id="mForm">
+    <form id="mForm" autocomplete="off">
       <div class="dbody" id="mBody"></div>
       <div class="dfoot">
         <span class="hint" id="mHint"></span>
@@ -175,67 +256,266 @@ tfoot td{background:#fafbfc;font-weight:600;border-top:2px solid var(--line)}
 <div id="toast"></div>
 
 <script>
+
 "use strict";
-/* ================= 基础工具 ================= */
-const KEY = "labmgmt.v1";
+/* ==========================================================================
+ * 实验室管理台 · 单文件离线版
+ * 小鼠 / 繁育 / 试剂 / 耗材 / 出入库 / 成本 / 备份
+ *
+ * 设计约束：
+ *   1. 只有一个 index.html，双击就能用，不需要装任何东西；
+ *   2. 数据全部留在本机浏览器 localStorage，不联网、不上传；
+ *   3. 老版本数据必须能直接打开（键名 labmgmt.v1 永不改，靠 meta.v 迁移）。
+ * ========================================================================== */
+
+const KEY = "labmgmt.v1";          // 历史键名，勿改：改了老用户的数据就读不到
+const SNAP_KEY = "labmgmt.snapshots"; // 每日自动快照
+const THEME_KEY = "labmgmt.theme";    // 主题偏好（独立存，避免污染业务数据）
+const DATA_V = 3;
+
+/* index.html?demo=1 → 演示模式：载入示例数据、只读不存，用于在线预览 / 截图 */
+const DEMO = /(^|[?&])demo(=|&|$)/.test(location.search);
+
+/* ---------------------------- 基础工具 ---------------------------- */
 const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const uid = () => Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-4);
-const num = v => { const n = parseFloat(String(v ?? "").replace(/,/g, "")); return isNaN(n) ? 0 : n; };
+const pad2 = n => String(n).padStart(2, "0");
+const num = v => { const n = parseFloat(String(v ?? "").replace(/[,，\s]/g, "")); return isNaN(n) ? 0 : n; };
+const numOrNull = v => { const s = String(v ?? "").replace(/[,，\s]/g, ""); if (s === "") return null; const n = parseFloat(s); return isNaN(n) ? null : n; };
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const nf = n => (Math.round(n * 10) / 10).toString();
 const nf2 = n => (Math.round(n * 100) / 100).toString();
+const money = n => (Math.round(n * 100) / 100).toLocaleString("zh-CN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const cut = (s, n = 60) => { const t = String(s ?? ""); return t.length > n ? t.slice(0, n) + "…" : t; };
 const todayStr = () => new Date().toLocaleDateString("sv-SE");
-const dayDiff = d => Math.round((new Date(d + "T00:00:00") - new Date(todayStr() + "T00:00:00")) / 86400000);
-const cut = (s, n = 60) => (s && s.length > n ? s.slice(0, n) + "…" : (s || ""));
 
-function blankState() {
-  return { mice: [], reagents: [], consumables: [], logs: [], settings: { expWarn: 30 }, meta: { v: 1, updated: null } };
+/* 日期：统一成 YYYY-MM-DD；兼容 Excel 里常见的 2026/10/28、2026.10.28、日期序列号 */
+function isoDate(v) {
+  if (v === null || v === undefined || v === "") return "";
+  const s0 = String(v).trim();
+  if (/^\d{5}(\.\d+)?$/.test(s0)) {
+    const n = Number(s0);
+    if (n > 20000 && n < 80000) {
+      return new Date(Date.UTC(1899, 11, 30) + Math.round(n) * 86400000).toISOString().slice(0, 10);
+    }
+  }
+  const m = s0.match(/^(\d{4})\s*[-/.年]\s*(\d{1,2})\s*[-/.月]\s*(\d{1,2})/);
+  if (m) return `${m[1]}-${pad2(m[2])}-${pad2(m[3])}`;
+  const d = new Date(s0.replace(/\./g, "-"));
+  return isNaN(d.getTime()) ? "" : d.toLocaleDateString("sv-SE");
 }
-let state = loadState();
+function addDays(date, n) {
+  if (!date) return "";
+  const d = new Date(date + "T00:00:00");
+  if (isNaN(d.getTime())) return "";
+  d.setDate(d.getDate() + n);
+  return d.toLocaleDateString("sv-SE");
+}
+/* 距离今天还有多少天：正数=将来，负数=已过去，空/非法=null */
+function dayDiff(date) {
+  if (!date) return null;
+  const d = new Date(date + "T00:00:00");
+  if (isNaN(d.getTime())) return null;
+  return Math.round((d.getTime() - new Date(todayStr() + "T00:00:00").getTime()) / 86400000);
+}
+function download(text, filename, mime) {
+  const blob = new Blob([text], { type: mime || "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+
+/* ---------------------------- 数据层 ---------------------------- */
+function blankState() {
+  return {
+    mice: [], breeding: [], reagents: [], consumables: [], logs: [],
+    settings: {
+      expWarn: 30, gestDays: 20, weanDays: 21, cardLayout: "6", snapshots: 7,
+      usageDays: 90,    // 消耗预测的统计窗口（天）
+      reorderDays: 30,  // 库存还能撑几天时提醒补货
+      theme: "auto"     // auto / light / dark
+    },
+    meta: { v: DATA_V, updated: null, createdAt: null }
+  };
+}
+
+/* 把任意来源（老数据 / JSON 备份 / 表格导入）的记录修剪成统一形状 */
+function normalizeRecord(kind, r) {
+  const o = Object.assign({}, r);
+  if (!o.id) o.id = uid();
+  if (!o.createdAt) o.createdAt = new Date().toISOString();
+  if (kind === "mice") {
+    o.strain = String(o.strain || "").trim();
+    o.cages = numOrNull(o.cages) ?? 0;
+    o.perCage = numOrNull(o.perCage) ?? 0;
+    o.ageWeeks = numOrNull(o.ageWeeks);
+    o.dob = isoDate(o.dob);
+    o.ageDate = isoDate(o.ageDate);
+    o.status = o.status === "已结束" ? "已结束" : "在养";
+  } else if (kind === "breeding") {
+    o.strain = String(o.strain || "").trim();
+    o.paired = isoDate(o.paired);
+    o.pregCheck = isoDate(o.pregCheck);
+    o.born = isoDate(o.born);
+    o.weanedDate = isoDate(o.weanedDate);
+    ["pups", "weanedCount", "destCages", "destPerCage"].forEach(k => { o[k] = numOrNull(o[k]); });
+    if (["配对中", "怀孕", "哺乳", "已断奶", "已结束"].indexOf(o.status) < 0) o.status = "配对中";
+  } else {
+    o.name = String(o.name || "").trim();
+    o.qty = numOrNull(o.qty) ?? 0;
+    o.min = numOrNull(o.min) ?? 0;
+    if (kind === "reagents") {
+      o.unitPrice = numOrNull(o.unitPrice);
+      o.openDate = isoDate(o.openDate);
+      o.expiry = isoDate(o.expiry);
+    }
+  }
+  return o;
+}
+
+function migrate(raw) {
+  const b = blankState();
+  if (!raw || typeof raw !== "object") return b;
+  return {
+    mice: (Array.isArray(raw.mice) ? raw.mice : []).map(r => normalizeRecord("mice", r)),
+    breeding: (Array.isArray(raw.breeding) ? raw.breeding : []).map(r => normalizeRecord("breeding", r)),
+    reagents: (Array.isArray(raw.reagents) ? raw.reagents : []).map(r => normalizeRecord("reagents", r)),
+    consumables: (Array.isArray(raw.consumables) ? raw.consumables : []).map(r => normalizeRecord("consumables", r)),
+    logs: (Array.isArray(raw.logs) ? raw.logs : []).map(l => {
+      const o = Object.assign({}, l);
+      if (!o.id) o.id = uid();
+      o.date = isoDate(o.date) || todayStr();
+      o.qty = num(o.qty);
+      o.unitPrice = numOrNull(o.unitPrice);
+      o.amount = numOrNull(o.amount);
+      if (o.amount === null && o.unitPrice !== null) o.amount = Math.round(o.qty * o.unitPrice * 100) / 100;
+      if (!o.ts) o.ts = new Date(o.date + "T00:00:00").getTime() || Date.now();
+      return o;
+    }),
+    settings: Object.assign({}, b.settings, raw.settings || {}),
+    meta: Object.assign({}, b.meta, raw.meta || {}, { v: DATA_V })
+  };
+}
 
 function loadState() {
-  const b = blankState();
   try {
     const raw = localStorage.getItem(KEY);
-    if (!raw) return b;
-    const o = JSON.parse(raw) || {};
-    return {
-      mice: Array.isArray(o.mice) ? o.mice : [],
-      reagents: Array.isArray(o.reagents) ? o.reagents : [],
-      consumables: Array.isArray(o.consumables) ? o.consumables : [],
-      logs: Array.isArray(o.logs) ? o.logs : [],
-      settings: Object.assign(b.settings, o.settings || {}),
-      meta: Object.assign(b.meta, o.meta || {})
-    };
-  } catch (e) { console.warn("读取本地数据失败", e); return b; }
+    if (!raw) return blankState();
+    return migrate(JSON.parse(raw));
+  } catch (e) {
+    console.warn("读取本地数据失败，已按空数据启动", e);
+    return blankState();
+  }
 }
+
+let state = DEMO ? blankState() : loadState();
+if (DEMO) state.meta.demo = 1;
+
 function save() {
+  if (DEMO) { paintSaveInfo(); return true; } // 演示模式：只在内存里改，绝不写入本机存储
   state.meta.updated = Date.now();
+  if (!state.meta.createdAt) state.meta.createdAt = state.meta.updated;
   try {
     localStorage.setItem(KEY, JSON.stringify(state));
+    dailySnapshot();
   } catch (e) {
-    toast("保存失败：浏览器存储空间不足，请先到「数据备份」导出 JSON", true);
+    toast("保存失败：浏览器存储空间不足，请先到「数据 · 设置」导出 JSON 备份", true);
+    paintSaveInfo();
+    return false;
   }
   paintSaveInfo();
+  return true;
 }
+
 function paintSaveInfo() {
   const t = state.meta.updated ? new Date(state.meta.updated) : null;
-  const pad = n => String(n).padStart(2, "0");
-  $("#saveInfo").textContent = t
-    ? `已自动保存\n${t.getFullYear()}-${pad(t.getMonth() + 1)}-${pad(t.getDate())} ${pad(t.getHours())}:${pad(t.getMinutes())}`
-    : "尚无数据";
-  $("#saveInfo").style.whiteSpace = "pre-line";
+  const el = $("#saveInfo");
+  if (!el) return;
+  if (DEMO) {
+    el.textContent = "演示模式：示例数据不保存\n下载 index.html 双击即可录入真实数据";
+    el.style.whiteSpace = "pre-line";
+    return;
+  }
+  el.textContent = t
+    ? `已自动保存 ${t.getFullYear()}-${pad2(t.getMonth() + 1)}-${pad2(t.getDate())} ${pad2(t.getHours())}:${pad2(t.getMinutes())}\nv${state.meta.v} · Ctrl+Z 撤销 · Ctrl+K 搜索`
+    : "尚无数据，改动会自动保存在本机";
+  el.style.whiteSpace = "pre-line";
 }
+
+/* ---------- 每日快照：每天第一次保存时留一份，最多留 N 份 ---------- */
+function readSnapshots() {
+  try {
+    const list = JSON.parse(localStorage.getItem(SNAP_KEY) || "[]");
+    return Array.isArray(list) ? list.filter(s => s && s.date && typeof s.json === "string") : [];
+  } catch (e) { return []; }
+}
+function dailySnapshot() {
+  const today = todayStr();
+  const list = readSnapshots();
+  if (list.length && list[0].date === today) return;
+  const json = JSON.stringify(state);
+  if (json.length > 1200000) return; // 数据太大就不占空间了
+  list.unshift({ date: today, ts: Date.now(), json });
+  const keep = Math.max(1, Math.min(30, num(state.settings.snapshots) || 7));
+  localStorage.setItem(SNAP_KEY, JSON.stringify(list.slice(0, keep)));
+}
+function snapshotInfo() {
+  const list = readSnapshots();
+  return { list, bytes: list.reduce((n, s) => n + s.json.length, 0) };
+}
+function restoreSnapshot(date) {
+  const s = readSnapshots().find(x => x.date === date);
+  if (!s) { toast("快照不存在，可能已被清理", true); return; }
+  if (!confirm(`用 ${date} 的自动快照覆盖当前数据？\n当前数据会先放进撤销栈（Ctrl+Z 可回退）。`)) return;
+  pushUndo("恢复快照 " + date);
+  try { state = migrate(JSON.parse(s.json)); } catch (e) { toast("快照已损坏，无法恢复", true); return; }
+  save();
+  render();
+  toast("已恢复到 " + date + " 的快照");
+}
+
+/* ---------- 撤销：每次写操作前压一份状态，Ctrl+Z 回退 ---------- */
+const undoStack = [];
+function pushUndo(label) {
+  try { undoStack.push({ label: label || "操作", json: JSON.stringify(state) }); } catch (e) { return; }
+  if (undoStack.length > 20) undoStack.shift();
+  paintUndo();
+}
+function paintUndo() {
+  const box = $("#topActions");
+  if (!box) return;
+  const has = undoStack.length > 0;
+  box.innerHTML = `<button class="btn mini ghost" id="btn-undo" type="button"${has ? "" : " disabled"} title="Ctrl+Z">↩ 撤销${has ? "（" + esc(cut(undoStack[undoStack.length - 1].label, 14)) + "）" : ""}</button>`;
+  const b = $("#btn-undo");
+  if (b) b.onclick = undo;
+}
+function undo() {
+  const snap = undoStack.pop();
+  if (!snap) { toast("没有可撤销的操作", true); return; }
+  try { state = migrate(JSON.parse(snap.json)); } catch (e) { toast("撤销失败", true); return; }
+  save();
+  render();
+  toast("已撤销：" + snap.label);
+}
+
+/* ---------------------------- 提示条 ---------------------------- */
 let toastTimer;
 function toast(msg, isErr) {
   const el = $("#toast");
+  if (!el) return;
   el.textContent = msg;
   el.className = "show" + (isErr ? " err" : "");
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => (el.className = ""), isErr ? 4500 : 2200);
+  toastTimer = setTimeout(() => { el.className = ""; }, isErr ? 4500 : 2200);
 }
 
-/* ================= 字段定义 ================= */
+
+/* ============================== 字段定义 ============================== */
 const SCHEMA = {
   mice: [
     { k: "strain", l: "品系", t: "text", req: 1, ph: "如 C57BL/6J、BALB/c、NOD-SCID", list: 1 },
@@ -253,6 +533,26 @@ const SCHEMA = {
     { k: "status", l: "状态", t: "select", opts: ["在养", "已结束"], def: "在养" },
     { k: "note", l: "备注", t: "textarea", wide: 1 }
   ],
+  breeding: [
+    { k: "code", l: "配对编号", t: "text", list: 1, ph: "如 B26-01（自发编号，便于追溯）" },
+    { k: "strain", l: "品系", t: "text", req: 1, list: 1, ph: "如 C57BL/6J、BALB/c" },
+    { k: "father", l: "父本耳号", t: "text", ph: "雄性编号" },
+    { k: "mother", l: "母本耳号", t: "text", ph: "雌性编号" },
+    { k: "paired", l: "合笼日期", t: "date", req: 1, hint: "按合笼 + 妊娠天数推算预产期" },
+    { k: "pregCheck", l: "孕检日期", t: "date", hint: "见栓 / 孕检阳性当天" },
+    { k: "born", l: "出生日期", t: "date", hint: "填了按「出生 + 断奶天数」提醒断奶" },
+    { k: "pups", l: "窝仔数", t: "number", step: "1", min: 0 },
+    { k: "weanedDate", l: "断奶日期", t: "date" },
+    { k: "weanedCount", l: "断奶只数", t: "number", step: "1", min: 0 },
+    { k: "destCages", l: "分笼笼数", t: "number", step: "1", min: 0, hint: "断奶后分成几笼" },
+    { k: "destPerCage", l: "分笼只数/笼", t: "number", step: "1", min: 0 },
+    { k: "purpose", l: "实验目的 / 去向", t: "textarea", wide: 1, list: 1, ph: "如 繁育保种 / 断奶后转 MC38 荷瘤" },
+    { k: "project", l: "项目 / 课题", t: "text", list: 1 },
+    { k: "room", l: "房间 / 架位", t: "text", list: 1 },
+    { k: "keeper", l: "负责人", t: "text", list: 1 },
+    { k: "status", l: "select", opts: ["配对中", "怀孕", "哺乳", "已断奶", "已结束"], def: "配对中" },
+    { k: "note", l: "备注", t: "textarea", wide: 1 }
+  ],
   reagents: [
     { k: "name", l: "试剂名称", t: "text", req: 1, list: 1, ph: "如 Anti-CD3 antibody" },
     { k: "catNo", l: "货号", t: "text" },
@@ -262,6 +562,7 @@ const SCHEMA = {
     { k: "qty", l: "库存数量", t: "number", step: "any", min: 0, def: 0 },
     { k: "unit", l: "单位", t: "text", list: 1, ph: "µL / mL / 支 / 瓶 / 盒 / 次" },
     { k: "min", l: "库存下限", t: "number", step: "any", min: 0, def: 0, hint: "低于或等于此值时提醒补货" },
+    { k: "unitPrice", l: "单价（元 / 单位）", t: "number", step: "any", min: 0, ph: "如 320", hint: "用于出库成本统计，可留空" },
     { k: "location", l: "存放位置", t: "text", list: 1, ph: "如 4℃冰箱 A-2 / -20℃ B-1" },
     { k: "openDate", l: "开封日期", t: "date" },
     { k: "expiry", l: "有效期至", t: "date" },
@@ -274,13 +575,15 @@ const SCHEMA = {
     { k: "qty", l: "库存数量", t: "number", step: "any", min: 0, def: 0 },
     { k: "unit", l: "单位", t: "text", list: 1, ph: "盒 / 包 / 个 / 箱" },
     { k: "min", l: "安全库存", t: "number", step: "any", min: 0, def: 0, hint: "低于或等于此值时提醒补货" },
+    { k: "unitPrice", l: "单价（元 / 单位）", t: "number", step: "any", min: 0, ph: "可留空" , hint: "用于出库成本统计" },
     { k: "location", l: "存放位置", t: "text", list: 1 },
     { k: "supplier", l: "供应商", t: "text", list: 1 },
     { k: "note", l: "备注", t: "textarea", wide: 1 }
   ]
 };
+const KIND_LABEL = { mice: "小鼠", breeding: "繁育", reagents: "试剂", consumables: "耗材" };
 
-/* ================= 计算 ================= */
+/* ============================== 计算 ============================== */
 function ageOf(r) {
   if (r.dob) {
     const d = (Date.now() - new Date(r.dob + "T00:00:00").getTime()) / 86400000;
@@ -289,17 +592,68 @@ function ageOf(r) {
   if (r.ageWeeks !== null && r.ageWeeks !== undefined && r.ageWeeks !== "") {
     let w = num(r.ageWeeks);
     const ref = r.ageDate || (r.createdAt ? r.createdAt.slice(0, 10) : todayStr());
-    w += dayDiff(ref) / -7; // 从记录日推算到今天
-    return { w: w, from: "manual", ref };
+    const back = dayDiff(ref);
+    w += (back === null ? 0 : back) / -7;
+    return { w, from: "manual", ref };
   }
   return { w: null, from: "none" };
 }
 const totalMice = r => num(r.cages) * num(r.perCage);
 const isActive = r => (r.status || "在养") !== "已结束";
 const expDays = r => (r.expiry ? dayDiff(r.expiry) : null);
+const stockValue = r => num(r.qty) * num(r.unitPrice);
+const isLow = r => num(r.min) > 0 && num(r.qty) <= num(r.min);
 
-/* ================= 过滤 ================= */
-const ui = { view: "dash", q: { mice: "", reagents: "", consumables: "", logs: "" }, status: "all", strain: "all", cat: "all", logKind: "all" };
+/* ---------- 消耗预测：按最近 N 天的「出库」流水估日均用量与可用天数 ---------- */
+const usageWindow = () => Math.max(7, Math.min(730, num(state.settings.usageDays) || 90));
+const reorderDays = () => Math.max(1, Math.min(365, num(state.settings.reorderDays) || 30));
+
+function usageOf(kind, r) {
+  const win = usageWindow();
+  const since = addDays(todayStr(), -(win - 1));
+  let sum = 0, n = 0, last = "";
+  for (const l of state.logs) {
+    if (l.kind !== kind || l.action !== "出库") continue;
+    const sameItem = l.itemId ? l.itemId === r.id : String(l.itemName || "") === String(r.name || "");
+    if (!sameItem) continue;
+    const d = l.date || "";
+    if (!d || d < since) continue;
+    sum += num(l.qty);
+    n++;
+    if (d > last) last = d;
+  }
+  const day = sum / win;                        // 日均消耗量
+  const qty = num(r.qty);
+  const daysLeft = day > 0 ? qty / day : null;  // 还能用多少天
+  return {
+    win, sum, n, last, day, qty, daysLeft,
+    due: daysLeft === null ? "" : addDays(todayStr(), Math.floor(daysLeft)),
+    reorder: reorderDays()
+  };
+}
+/* 建议补到多少：撑过「补货提前期 + 30 天」 */
+const suggestQty = u => (u.day > 0 ? Math.ceil(u.day * (u.reorder + 30)) : 0);
+
+const gestDays = () => Math.max(1, num(state.settings.gestDays) || 20);
+const weanDays = () => Math.max(1, num(state.settings.weanDays) || 21);
+const breedOpen = r => ["已断奶", "已结束"].indexOf(r.status || "配对中") < 0;
+function breedStage(r) {
+  const s = r.status || "配对中";
+  if (s === "已断奶" || s === "已结束") return { key: "closed", label: s, cls: "" };
+  if (r.born || s === "哺乳") return { key: "lact", label: "哺乳", cls: "info" };
+  if (r.pregCheck || s === "怀孕") return { key: "preg", label: "怀孕", cls: "warn" };
+  return { key: "pair", label: "配对中", cls: "ok" };
+}
+const expectBorn = r => r.born || (r.paired ? addDays(r.paired, gestDays()) : "");
+const expectWean = r => r.weanedDate || (r.born ? addDays(r.born, weanDays()) : "");
+
+/* ============================== 过滤 / 排序 ============================== */
+const ui = {
+  view: "dash",
+  q: { mice: "", breeding: "", reagents: "", consumables: "", logs: "" },
+  status: "all", strain: "all", cat: "all", logKind: "all", logProject: "all", breedStage: "all",
+  sort: { mice: null, breeding: null, reagents: null, consumables: null, logs: { k: "date", dir: -1 } }
+};
 
 function filterMice() {
   const q = ui.q.mice.trim().toLowerCase();
@@ -322,30 +676,150 @@ function filterStock(kind) {
 function filterLogs() {
   const q = ui.q.logs.trim().toLowerCase();
   return state.logs
-    .filter(l => (ui.logKind === "all" || l.kind === ui.logKind))
-    .filter(l => !q || [l.itemName, l.action, l.operator, l.note].join(" ").toLowerCase().includes(q))
+    .filter(l => ui.logKind === "all" || l.kind === ui.logKind)
+    .filter(l => ui.logProject === "all" || (l.project || "") === ui.logProject)
+    .filter(l => !q || [l.itemName, l.action, l.operator, l.note, l.project].join(" ").toLowerCase().includes(q))
     .sort((a, b) => (b.date || "").localeCompare(a.date || "") || (b.ts || 0) - (a.ts || 0));
 }
+function filterBreeding() {
+  const q = ui.q.breeding.trim().toLowerCase();
+  return state.breeding.filter(r => {
+    const open = breedOpen(r);
+    if (ui.breedStage === "open" && !open) return false;
+    if (ui.breedStage === "closed" && open) return false;
+    if (ui.breedStage === "preg" && !(open && !r.born)) return false;
+    if (ui.breedStage === "wean" && !(open && r.born && !r.weanedDate)) return false;
+    if (!q) return true;
+    return [r.code, r.strain, r.father, r.mother, r.purpose, r.project, r.room, r.keeper, r.note].join(" ").toLowerCase().includes(q);
+  });
+}
 
-/* ================= 提醒 ================= */
+function sortBy(list, sort, getters) {
+  if (!sort || !sort.k || !getters[sort.k]) return list;
+  const get = getters[sort.k], dir = sort.dir || 1;
+  return list.slice().sort((a, b) => {
+    const x = get(a), y = get(b);
+    const ex = x === null || x === undefined || x === "", ey = y === null || y === undefined || y === "";
+    if (ex && ey) return 0;
+    if (ex) return 1;
+    if (ey) return -1;
+    if (x === y) return 0;
+    return (x > y ? 1 : -1) * dir;
+  });
+}
+function thSort(view, key, label, cls) {
+  const s = ui.sort[view];
+  const on = s && s.k === key;
+  const arrow = on ? (s.dir > 0 ? " ▲" : " ▼") : "";
+  return `<th class="sortable${on ? " on" : ""}${cls ? " " + cls : ""}" data-sort="${key}">${label}${arrow}</th>`;
+}
+
+/* ============================== 提醒 ============================== */
 function alerts() {
   const out = [];
   const warn = num(state.settings.expWarn) || 30;
-  state.reagents.filter(r => r.expiry).forEach(r => {
+  state.reagents.forEach(r => {
     const d = expDays(r);
-    if (d < 0) out.push({ cls: "bad", txt: `已过期 ${-d} 天`, name: r.name, extra: `${r.expiry} · ${r.location || ""}` });
-    else if (d <= warn) out.push({ cls: "warn", txt: `${d} 天后过期`, name: r.name, extra: `${r.expiry} · ${r.location || ""}` });
+    if (d === null) return;
+    if (d < 0) out.push({ cls: "bad", kind: "试剂", txt: `已过期 ${-d} 天`, name: r.name, extra: `${r.expiry} · ${r.location || ""}`, go: "reagents" });
+    else if (d <= warn) out.push({ cls: "warn", kind: "试剂", txt: `${d} 天后过期`, name: r.name, extra: `${r.expiry} · ${r.location || ""}`, go: "reagents" });
   });
-  state.reagents.filter(r => num(r.min) > 0 && num(r.qty) <= num(r.min)).forEach(r => {
-    out.push({ cls: "warn", txt: "试剂库存不足", name: r.name, extra: `剩 ${nf2(num(r.qty))} ${r.unit || ""} / 下限 ${nf2(num(r.min))}` });
+  ["reagents", "consumables"].forEach(kind => {
+    state[kind].forEach(r => {
+      if (isLow(r)) {
+        out.push({
+          cls: "warn", kind: KIND_LABEL[kind], txt: "库存不足", name: r.name,
+          extra: `剩 ${nf2(num(r.qty))} ${r.unit || ""} / 下限 ${nf2(num(r.min))}`, go: kind
+        });
+        return; // 已经缺货就不再重复提示「快用完」
+      }
+      const u = usageOf(kind, r);
+      if (u.daysLeft === null || u.daysLeft > u.reorder) return;
+      const d = Math.max(0, Math.floor(u.daysLeft));
+      out.push({
+        cls: d <= 7 ? "bad" : "warn", kind: KIND_LABEL[kind],
+        txt: d === 0 ? "库存已用尽" : `约 ${d} 天后用完`,
+        name: r.name,
+        extra: `日均 ${nf2(u.day)} ${r.unit || ""} · 剩 ${nf2(num(r.qty))} · 建议补 ${nf2(suggestQty(u))} ${r.unit || ""}`,
+        go: kind
+      });
+    });
   });
-  state.consumables.filter(r => num(r.min) > 0 && num(r.qty) <= num(r.min)).forEach(r => {
-    out.push({ cls: "warn", txt: "耗材库存不足", name: r.name, extra: `剩 ${nf2(num(r.qty))} ${r.unit || ""} / 下限 ${nf2(num(r.min))}` });
+  state.breeding.filter(breedOpen).forEach(r => {
+    const name = `${r.strain || "繁育"}${r.code ? " · " + r.code : ""}`;
+    const extra = `${r.father || "-"} × ${r.mother || "-"} · ${r.room || ""}`;
+    if (!r.born) {
+      const d = dayDiff(expectBorn(r));
+      if (d === null) return;
+      if (d < -7) out.push({ cls: "bad", kind: "繁育", txt: `超预产期 ${-d} 天`, name, extra, go: "breeding" });
+      else if (d < 0) out.push({ cls: "warn", kind: "繁育", txt: `已到预产期（${-d} 天）`, name, extra, go: "breeding" });
+      else if (d <= 3) out.push({ cls: "warn", kind: "繁育", txt: `预计 ${d} 天内生产`, name, extra: expectBorn(r), go: "breeding" });
+    } else if (!r.weanedDate) {
+      const d = dayDiff(expectWean(r));
+      if (d === null) return;
+      if (d < 0) out.push({ cls: "bad", kind: "繁育", txt: `该断奶了（超 ${-d} 天）`, name, extra: `出生 ${r.born} · ${r.pups || "?"} 仔`, go: "breeding" });
+      else if (d <= 3) out.push({ cls: "warn", kind: "繁育", txt: `${d} 天后断奶`, name, extra: `出生 ${r.born} · ${r.pups || "?"} 仔`, go: "breeding" });
+    }
   });
-  return out;
+  const rank = { bad: 0, warn: 1 };
+  return out.sort((a, b) => (rank[a.cls] ?? 2) - (rank[b.cls] ?? 2));
 }
 
-/* ================= 视图：概览 ================= */
+/* 近期繁育节点：预产 / 断奶 */
+function breedingTimeline() {
+  const ev = [];
+  state.breeding.filter(breedOpen).forEach(r => {
+    if (!r.born) {
+      const d = expectBorn(r);
+      if (d) ev.push({ date: d, day: dayDiff(d), txt: "预计生产", r });
+    } else if (!r.weanedDate) {
+      const d = expectWean(r);
+      if (d) ev.push({ date: d, day: dayDiff(d), txt: "预计断奶", r });
+    }
+  });
+  return ev.sort((a, b) => String(a.date).localeCompare(String(b.date))).slice(0, 8);
+}
+
+/* ============================== 小图表（纯 div，无外部依赖） ============================== */
+function hBarsHTML(items, unitTxt) {
+  if (!items.length) return '<div class="muted">暂无数据</div>';
+  const max = Math.max(...items.map(i => i.value)) || 1;
+  return `<div class="hbars">${items.map(i => `
+    <div class="hrow" title="${esc(i.label)}：${nf(i.value)}${esc(unitTxt || "")}">
+      <span class="hl">${esc(i.label)}</span>
+      <span class="hb"><i style="width:${Math.max(2, (i.value / max) * 100).toFixed(1)}%"></i></span>
+      <b class="hv">${nf(i.value)}</b>
+    </div>`).join("")}</div>`;
+}
+
+/* 近 N 天每天出入库笔数：入库在下（绿）、出库在上（青） */
+function stockTrend(days) {
+  const start = addDays(todayStr(), -(days - 1));
+  const map = {};
+  for (let i = 0; i < days; i++) { const d = addDays(start, i); map[d] = { date: d, inQ: 0, outQ: 0 }; }
+  state.logs.forEach(l => {
+    const o = map[l.date || ""];
+    if (!o) return;
+    if (l.action === "入库") o.inQ++; else o.outQ++;
+  });
+  return Object.values(map);
+}
+function trendHTML(list) {
+  const max = Math.max(1, ...list.map(d => d.inQ + d.outQ));
+  const bars = list.map(d => {
+    const tot = d.inQ + d.outQ;
+    const hOf = v => (tot ? (v / tot) * 100 : 0).toFixed(1);
+    const hpx = tot ? (tot / max) * 100 : 0;
+    return `<div class="bar" style="height:${hpx.toFixed(1)}%" title="${esc(d.date)}：入库 ${d.inQ} 笔 / 出库 ${d.outQ} 笔">
+      <i class="i-out" style="height:${hOf(d.outQ)}%"></i><i class="i-in" style="height:${hOf(d.inQ)}%"></i>
+    </div>`;
+  }).join("");
+  const first = list[0] ? list[0].date : "";
+  return `<div class="trend">${bars}</div>
+    <div class="trend-x"><span>${esc(first)}</span><span>共 ${list.reduce((s, d) => s + d.inQ + d.outQ, 0)} 笔流水</span><span>今天</span></div>`;
+}
+
+/* ============================== 视图：概览 ============================== */
 function viewDash() {
   const act = state.mice.filter(isActive);
   const cages = act.reduce((s, r) => s + num(r.cages), 0);
@@ -353,18 +827,32 @@ function viewDash() {
   const strains = new Set(act.map(r => r.strain).filter(Boolean));
   const al = alerts();
   const bad = al.filter(a => a.cls === "bad").length;
+  const openBreed = state.breeding.filter(breedOpen);
+  const lowRe = state.reagents.filter(isLow).length;
+  const lowCo = state.consumables.filter(isLow).length;
+  const runout = kind => state[kind].filter(r => {
+    if (isLow(r)) return false;
+    const u = usageOf(kind, r);
+    return u.daysLeft !== null && u.daysLeft <= u.reorder;
+  }).length;
+  const runRe = runout("reagents"), runCo = runout("consumables");
+  const noData = !state.mice.length && !state.reagents.length && !state.consumables.length && !state.breeding.length;
 
   const byStrain = {};
   act.forEach(r => {
     const k = r.strain || "(未填品系)";
     const o = byStrain[k] || (byStrain[k] = { cages: 0, mice: 0, n: 0, wk: [], purposes: new Set(), projects: new Set() });
-    o.cages += num(r.cages); o.mice += totalMice(r); o.n++;
-    const a = ageOf(r); if (a.w !== null) o.wk.push(a.w);
+    o.cages += num(r.cages);
+    o.mice += totalMice(r);
+    o.n++;
+    const a = ageOf(r);
+    if (a.w !== null) o.wk.push(a.w);
     if (r.purpose) o.purposes.add(r.purpose.trim());
     if (r.project) o.projects.add(r.project.trim());
   });
   const strainRows = Object.entries(byStrain).sort((a, b) => b[1].mice - a[1].mice).map(([k, o]) => {
-    const w0 = o.wk.length ? Math.min(...o.wk) : null, w1 = o.wk.length ? Math.max(...o.wk) : null;
+    const w0 = o.wk.length ? Math.min(...o.wk) : null;
+    const w1 = o.wk.length ? Math.max(...o.wk) : null;
     return `<tr><td><b>${esc(k)}</b></td><td class="num">${o.n}</td><td class="num">${nf(o.cages)}</td>
       <td class="num">${nf(o.mice)}</td>
       <td class="nowrap">${w0 === null ? '<span class="muted">—</span>' : nf(w0) + " ~ " + nf(w1) + " 周"}</td>
@@ -372,16 +860,49 @@ function viewDash() {
       <td class="wrap-cell">${esc([...o.projects].join("；")) || '<span class="muted">—</span>'}</td></tr>`;
   }).join("");
 
-  const lowRe = state.reagents.filter(r => num(r.min) > 0 && num(r.qty) <= num(r.min)).length;
-  const lowCo = state.consumables.filter(r => num(r.min) > 0 && num(r.qty) <= num(r.min)).length;
+  const tl = breedingTimeline();
+  const topStrains = Object.entries(byStrain)
+    .sort((a, b) => b[1].mice - a[1].mice)
+    .slice(0, 8)
+    .map(([k, o]) => ({ label: k, value: o.mice }));
+  const tlRows = tl.map(e => {
+    const d = e.day;
+    const tag = d === null ? "" : d < 0 ? `<span class="tag bad">已过 ${-d} 天</span>` : d === 0 ? '<span class="tag warn">今天</span>' : `<span class="tag ${d <= 3 ? "warn" : "info"}">${d} 天后</span>`;
+    return `<tr><td class="nowrap">${esc(e.date)}</td><td>${tag}</td><td><b>${esc(e.r.strain || "")}</b> ${esc(e.r.code || "")}</td>
+      <td>${esc(e.txt)}</td><td class="nowrap">${esc([e.r.father, e.r.mother].filter(Boolean).join(" × ")) || '<span class="muted">—</span>'}</td>
+      <td>${esc(e.r.room || "")}</td></tr>`;
+  }).join("");
 
   $("#content").innerHTML = `
+    ${noData ? `<div class="panel welcome">
+      <div class="body">
+        <h2>👋 第一次用？从这里开始</h2>
+        <p class="muted">数据只存在这台电脑的浏览器里，不联网、不上传。改动会自动保存，每天自动留一份快照。</p>
+        <div class="toolbar" style="margin-bottom:0">
+          <button class="btn primary" data-go="new-mice">+ 新增第一条小鼠记录</button>
+          <button class="btn" data-go="demo">载入示例数据（可随时删）</button>
+          <button class="btn" data-go="import">从 Excel / CSV 导入</button>
+        </div>
+      </div>
+    </div>` : ""}
+
     <div class="cards">
       <div class="stat card"><div class="k">在养小鼠总数</div><div class="v">${nf(mice)}</div><div class="s">共 ${nf(cages)} 笼 · ${strains.size} 个品系</div></div>
-      <div class="stat card"><div class="k">小鼠记录条数</div><div class="v">${state.mice.length}</div><div class="s">其中在养 ${act.length} 条</div></div>
-      <div class="stat card"><div class="k">试剂品种</div><div class="v">${state.reagents.length}</div><div class="s">${lowRe ? lowRe + " 项库存不足" : "库存正常"}</div></div>
-      <div class="stat card"><div class="k">耗材品种</div><div class="v">${state.consumables.length}</div><div class="s">${lowCo ? lowCo + " 项库存不足" : "库存正常"}</div></div>
-      <div class="stat card ${al.length ? (bad ? "bad" : "warn") : "ok"}"><div class="k">待处理提醒</div><div class="v">${al.length}</div><div class="s">${bad ? bad + " 项已过期" : "临期 / 缺货提醒"}</div></div>
+      <div class="stat card"><div class="k">繁育进行中</div><div class="v">${openBreed.length}</div><div class="s">待断奶 ${state.breeding.filter(r => breedOpen(r) && r.born && !r.weanedDate).length} 窝</div></div>
+      <div class="stat card"><div class="k">试剂品种</div><div class="v">${state.reagents.length}</div><div class="s">${[lowRe ? lowRe + " 项库存不足" : "", runRe ? runRe + " 项即将用完" : ""].filter(Boolean).join(" · ") || "库存正常"}</div></div>
+      <div class="stat card"><div class="k">耗材品种</div><div class="v">${state.consumables.length}</div><div class="s">${[lowCo ? lowCo + " 项库存不足" : "", runCo ? runCo + " 项即将用完" : ""].filter(Boolean).join(" · ") || "库存正常"}</div></div>
+      <div class="stat card ${al.length ? (bad ? "bad" : "warn") : "ok"}"><div class="k">待处理提醒</div><div class="v">${al.length}</div><div class="s">${bad ? bad + " 项需马上处理" : "临期 / 缺货 / 繁育节点"}</div></div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
+        <h3>品系只数分布 <em>仅「在养」记录，前 8 个品系</em></h3>
+        <div class="body">${hBarsHTML(topStrains, " 只")}</div>
+      </div>
+      <div class="panel">
+        <h3>近 30 天出入库 <em><span class="lg lg-out"></span>出库 <span class="lg lg-in"></span>入库 · 柱高 = 当天流水笔数</em></h3>
+        <div class="body">${trendHTML(stockTrend(30))}</div>
+      </div>
     </div>
 
     <div class="panel">
@@ -396,10 +917,20 @@ function viewDash() {
     </div>
 
     <div class="panel">
-      <h3>提醒 <em>有效期阈值 ${num(state.settings.expWarn) || 30} 天，可在「数据备份」里调整</em></h3>
+      <h3>繁育近期节点 <em>预产 = 合笼 + ${gestDays()} 天；断奶 = 出生 + ${weanDays()} 天（可在「数据 · 设置」改）</em></h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>日期</th><th>倒计时</th><th>品系 / 编号</th><th>节点</th><th>父母本</th><th>位置</th></tr></thead>
+          <tbody>${tlRows || '<tr><td colspan="6" class="empty">暂无进行中的繁育记录</td></tr>'}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>提醒 <em>有效期阈值 ${num(state.settings.expWarn) || 30} 天，可在「数据 · 设置」里调整</em></h3>
       <div class="body">
-        ${al.length ? `<div class="items">${al.map(a => `<div class="row"><span class="tag ${a.cls}">${esc(a.txt)}</span><b>${esc(a.name)}</b><span class="r">${esc(a.extra)}</span></div>`).join("")}</div>`
-      : '<div class="muted">🎉 没有过期或库存预警。</div>'}
+        ${al.length ? `<div class="items">${al.map(a => `<div class="row"><span class="tag ${a.cls}">${esc(a.txt)}</span><b>${esc(a.name)}</b><span class="r">${esc(a.kind)} · ${esc(a.extra)}</span></div>`).join("")}</div>`
+      : '<div class="muted">🎉 没有过期、缺货或繁育节点提醒。</div>'}
       </div>
     </div>
 
@@ -407,23 +938,48 @@ function viewDash() {
       <h3>最近出入库 <em>最新 8 条</em></h3>
       <div class="tablewrap">
         <table>
-          <thead><tr><th>日期</th><th>类型</th><th>物品</th><th>动作</th><th class="num">数量</th><th>操作人</th><th>备注</th></tr></thead>
+          <thead><tr><th>日期</th><th>类型</th><th>物品</th><th>动作</th><th class="num">数量</th><th class="num">金额</th><th>项目</th><th>操作人</th><th>备注</th></tr></thead>
           <tbody>${state.logs.slice().sort((a, b) => (b.ts || 0) - (a.ts || 0)).slice(0, 8).map(l => `
             <tr><td class="nowrap">${esc(l.date || "")}</td><td>${l.kind === "reagents" ? "试剂" : "耗材"}</td><td>${esc(l.itemName)}</td>
             <td><span class="tag ${l.action === "入库" ? "ok" : "info"}">${esc(l.action)}</span></td>
-            <td class="num">${nf2(num(l.qty))} ${esc(l.unit || "")}</td><td>${esc(l.operator || "")}</td><td class="wrap-cell">${esc(cut(l.note, 40))}</td></tr>`).join("")
-        || '<tr><td colspan="7" class="empty">暂无流水</td></tr>'}</tbody>
+            <td class="num">${nf2(num(l.qty))} ${esc(l.unit || "")}</td>
+            <td class="num">${l.amount === null || l.amount === undefined ? '<span class="muted">—</span>' : "¥" + money(l.amount)}</td>
+            <td>${esc(l.project || "") || '<span class="muted">—</span>'}</td>
+            <td>${esc(l.operator || "")}</td><td class="wrap-cell">${esc(cut(l.note, 40))}</td></tr>`).join("")
+        || '<tr><td colspan="9" class="empty">暂无流水</td></tr>'}</tbody>
         </table>
       </div>
     </div>`;
+
+  $("#content").onclick = e => {
+    const b = e.target.closest("button[data-go]");
+    if (!b) return;
+    const go = b.dataset.go;
+    if (go === "new-mice") openForm("mice");
+    if (go === "demo") loadDemo();
+    if (go === "import") { setView("data"); setTimeout(() => { const el = $("#imp-text"); if (el) el.focus(); }, 50); }
+  };
 }
 
-/* ================= 视图：小鼠 ================= */
+
+/* ============================== 视图：小鼠 ============================== */
+const MICE_SORT = {
+  strain: r => r.strain || "",
+  age: r => ageOf(r).w,
+  cages: r => num(r.cages),
+  perCage: r => num(r.perCage),
+  total: r => totalMice(r),
+  purpose: r => r.purpose || "",
+  status: r => (isActive(r) ? 0 : 1),
+  project: r => r.project || ""
+};
+
 function viewMice() {
   const strains = [...new Set(state.mice.map(r => r.strain).filter(Boolean))].sort();
+  const layout = state.settings.cardLayout || "6";
   $("#content").innerHTML = `
     <div class="toolbar">
-      <input id="q-mice" class="search" placeholder="搜索 品系 / 实验目的 / 项目 / 耳号 / 房间 / 负责人" value="${esc(ui.q.mice)}">
+      <input id="q-mice" class="search" placeholder="搜索 品系 / 实验目的 / 项目 / 耳号 / 房间 / 负责人（Ctrl+K）" value="${esc(ui.q.mice)}">
       <select id="f-status">
         <option value="all"${ui.status === "all" ? " selected" : ""}>全部状态</option>
         <option value="active"${ui.status === "active" ? " selected" : ""}>仅在养</option>
@@ -431,43 +987,59 @@ function viewMice() {
       </select>
       <select id="f-strain"><option value="all">全部品系</option>${strains.map(s => `<option value="${esc(s)}"${ui.strain === s ? " selected" : ""}>${esc(s)}</option>`).join("")}</select>
       <button class="btn primary" data-act="new">+ 新增记录</button>
+      <select id="f-layout" title="笼牌版式（A4）">
+        <option value="4"${layout === "4" ? " selected" : ""}>笼牌 2×2（大）</option>
+        <option value="6"${layout === "6" ? " selected" : ""}>笼牌 2×3（中）</option>
+        <option value="9"${layout === "9" ? " selected" : ""}>笼牌 3×3（小）</option>
+      </select>
       <button class="btn" data-act="print">🖨 打印笼牌</button>
       <button class="btn" data-act="csv">导出 CSV</button>
     </div>
     <div class="cards" id="miceStats"></div>
     <div class="panel">
-      <h3>小鼠记录 <em>周龄填写出生日期后自动更新；只数 = 笼数 × 只数/笼</em></h3>
+      <h3>小鼠记录 <em>周龄填出生日期后自动更新；只数 = 笼数 × 只数/笼；点表头排序</em></h3>
       <div class="tablewrap" id="miceRows"></div>
     </div>`;
-  $("#q-mice").oninput = e => { ui.q.mice = e.target.value; rowsMice(); };
+  $("#q-mice").oninput = e => { ui.q.mice = e.target.value; rowsMice(); statsMice(); };
   $("#f-status").onchange = e => { ui.status = e.target.value; rowsMice(); statsMice(); };
   $("#f-strain").onchange = e => { ui.strain = e.target.value; rowsMice(); statsMice(); };
+  $("#f-layout").onchange = e => { state.settings.cardLayout = e.target.value; save(); toast("笼牌版式已保存"); };
   $("#content .toolbar").onclick = e => {
-    const b = e.target.closest("button[data-act]"); if (!b) return;
+    const b = e.target.closest("button[data-act]");
+    if (!b) return;
     if (b.dataset.act === "new") openForm("mice");
     if (b.dataset.act === "print") printCages();
     if (b.dataset.act === "csv") exportCSV("mice");
   };
   $("#miceRows").onclick = e => {
-    const b = e.target.closest("button[data-act]"); if (!b) return;
+    const b = e.target.closest("button[data-act]");
+    if (!b) return;
     const id = b.dataset.id;
-    if (b.dataset.act === "edit") openForm("mice", id);
-    if (b.dataset.act === "del") delRecord("mice", id);
-    if (b.dataset.act === "toggle") {
-      const r = state.mice.find(x => x.id === id); if (!r) return;
-      r.status = isActive(r) ? "已结束" : "在养"; r.updatedAt = new Date().toISOString();
-      save(); rowsMice(); statsMice();
+    const act = b.dataset.act;
+    if (act === "edit") openForm("mice", id);
+    if (act === "copy") copyRecord("mice", id);
+    if (act === "del") delRecord("mice", id);
+    if (act === "toggle") {
+      const r = state.mice.find(x => x.id === id);
+      if (!r) return;
+      pushUndo(isActive(r) ? "结束记录" : "恢复记录");
+      r.status = isActive(r) ? "已结束" : "在养";
+      r.updatedAt = new Date().toISOString();
+      save();
+      rowsMice();
+      statsMice();
       toast("已标记为「" + r.status + "」");
     }
   };
-  rowsMice(); statsMice();
+  rowsMice();
+  statsMice();
 }
 
 function statsMice() {
   const list = filterMice(), act = list.filter(isActive);
   const cages = act.reduce((s, r) => s + num(r.cages), 0);
   const mice = act.reduce((s, r) => s + totalMice(r), 0);
-  const perCage = cages ? (mice / cages) : 0;
+  const perCage = cages ? mice / cages : 0;
   const strains = new Set(act.map(r => r.strain).filter(Boolean));
   $("#miceStats").innerHTML = `
     <div class="stat card"><div class="k">在养总只数</div><div class="v">${nf(mice)}</div><div class="s">筛选结果内</div></div>
@@ -477,7 +1049,7 @@ function statsMice() {
 }
 
 function rowsMice() {
-  const list = filterMice();
+  const list = sortBy(filterMice(), ui.sort.mice, MICE_SORT);
   if (!list.length) {
     $("#miceRows").innerHTML = '<div class="empty">没有符合条件的记录。点「+ 新增记录」开始。</div>';
     return;
@@ -498,20 +1070,150 @@ function rowsMice() {
       <td>${st}</td>
       <td class="nowrap">
         <button class="btn mini" data-act="edit" data-id="${r.id}">编辑</button>
+        <button class="btn mini" data-act="copy" data-id="${r.id}" title="复制一条一样的，方便批量录入">复制</button>
         <button class="btn mini" data-act="toggle" data-id="${r.id}">${isActive(r) ? "结束" : "恢复"}</button>
         <button class="btn mini danger" data-act="del" data-id="${r.id}">删</button>
       </td></tr>`;
   }).join("");
   const act = list.filter(isActive);
-  const tc = act.reduce((s, r) => s + num(r.cages), 0), tm = act.reduce((s, r) => s + totalMice(r), 0);
+  const tc = act.reduce((s, r) => s + num(r.cages), 0);
+  const tm = act.reduce((s, r) => s + totalMice(r), 0);
   $("#miceRows").innerHTML = `<table>
-    <thead><tr><th>品系 / 性别</th><th>周龄</th><th class="num">笼数</th><th class="num">只数/笼</th><th class="num">总只数</th><th>实验目的</th><th>项目 · 位置</th><th>状态</th><th>操作</th></tr></thead>
+    <thead><tr>${thSort("mice", "strain", "品系 / 性别")}${thSort("mice", "age", "周龄")}${thSort("mice", "cages", "笼数", "num")}${thSort("mice", "perCage", "只数/笼", "num")}${thSort("mice", "total", "总只数", "num")}${thSort("mice", "purpose", "实验目的")}${thSort("mice", "project", "项目 · 位置")}${thSort("mice", "status", "状态")}<th>操作</th></tr></thead>
     <tbody>${rows}</tbody>
     <tfoot><tr><td colspan="2">显示 ${list.length} 条（在养 ${act.length} 条）</td><td class="num">${nf(tc)}</td><td class="num"></td><td class="num">${nf(tm)}</td><td colspan="4"></td></tr></tfoot>
   </table>`;
+  paintUndo();
 }
 
-/* ================= 视图：试剂 / 耗材 ================= */
+/* ============================== 视图：繁育 ============================== */
+const BREED_SORT = {
+  strain: r => r.strain || "",
+  paired: r => r.paired || "",
+  born: r => r.born || expectBorn(r),
+  wean: r => r.weanedDate || expectWean(r),
+  pups: r => num(r.pups),
+  status: r => (breedOpen(r) ? 0 : 1)
+};
+
+function viewBreeding() {
+  $("#content").innerHTML = `
+    <div class="toolbar">
+      <input id="q-breed" class="search" placeholder="搜索 品系 / 配对编号 / 父母本 / 项目 / 负责人" value="${esc(ui.q.breeding)}">
+      <select id="f-stage">
+        <option value="all"${ui.breedStage === "all" ? " selected" : ""}>全部</option>
+        <option value="open"${ui.breedStage === "open" ? " selected" : ""}>进行中</option>
+        <option value="preg"${ui.breedStage === "preg" ? " selected" : ""}>待生产</option>
+        <option value="wean"${ui.breedStage === "wean" ? " selected" : ""}>待断奶</option>
+        <option value="closed"${ui.breedStage === "closed" ? " selected" : ""}>已断奶 / 已结束</option>
+      </select>
+      <button class="btn primary" data-act="new">+ 新增配对</button>
+      <button class="btn" data-act="csv">导出 CSV</button>
+    </div>
+    <div class="cards" id="breedStats"></div>
+    <div class="panel">
+      <h3>繁育台账 <em>预产 = 合笼 + ${gestDays()} 天；断奶 = 出生 + ${weanDays()} 天；断奶后可一键转成小鼠记录</em></h3>
+      <div class="tablewrap" id="breedRows"></div>
+    </div>`;
+  $("#q-breed").oninput = e => { ui.q.breeding = e.target.value; rowsBreeding(); statsBreeding(); };
+  $("#f-stage").onchange = e => { ui.breedStage = e.target.value; rowsBreeding(); statsBreeding(); };
+  $("#content .toolbar").onclick = e => {
+    const b = e.target.closest("button[data-act]");
+    if (!b) return;
+    if (b.dataset.act === "new") openForm("breeding");
+    if (b.dataset.act === "csv") exportCSV("breeding");
+  };
+  $("#breedRows").onclick = e => {
+    const b = e.target.closest("button[data-act]");
+    if (!b) return;
+    const id = b.dataset.id, act = b.dataset.act;
+    const r = state.breeding.find(x => x.id === id);
+    if (act === "edit") openForm("breeding", id);
+    if (act === "del") delRecord("breeding", id);
+    if (act === "convert") openConvert(id);
+    if (act === "weannow" && r) {
+      pushUndo("标记断奶");
+      r.weanedDate = todayStr();
+      if (r.weanedCount === null || r.weanedCount === undefined) r.weanedCount = r.pups;
+      r.status = "已断奶";
+      r.updatedAt = new Date().toISOString();
+      save();
+      rowsBreeding();
+      statsBreeding();
+      toast("已标记断奶，可点「转小鼠」生成小鼠记录");
+    }
+  };
+  rowsBreeding();
+  statsBreeding();
+}
+
+function statsBreeding() {
+  const list = filterBreeding();
+  const open = list.filter(breedOpen);
+  const waitBorn = open.filter(r => !r.born && r.paired).length;
+  const waitWean = open.filter(r => r.born && !r.weanedDate).length;
+  const closed = list.length - open.length;
+  const pups = open.filter(r => r.born).reduce((s, r) => s + num(r.pups), 0);
+  $("#breedStats").innerHTML = `
+    <div class="stat card"><div class="k">进行中配对</div><div class="v">${open.length}</div><div class="s">含怀孕 / 哺乳</div></div>
+    <div class="stat card ${waitBorn ? "warn" : ""}"><div class="k">待生产</div><div class="v">${waitBorn}</div><div class="s">已合笼未记录出生</div></div>
+    <div class="stat card ${waitWean ? "warn" : "ok"}"><div class="k">待断奶</div><div class="v">${waitWean}</div><div class="s">当前窝仔合计 ${pups} 只</div></div>
+    <div class="stat card"><div class="k">已断奶 / 已结束</div><div class="v">${closed}</div><div class="s">记录留存可追溯</div></div>`;
+}
+
+function rowsBreeding() {
+  const list = sortBy(filterBreeding(), ui.sort.breeding, BREED_SORT);
+  if (!list.length) {
+    $("#breedRows").innerHTML = '<div class="empty">还没有繁育记录。点「+ 新增配对」记下一窝。</div>';
+    return;
+  }
+  const rows = list.map(r => {
+    const st = breedStage(r);
+    const eb = expectBorn(r), ew = expectWean(r);
+    const bornCell = r.born
+      ? `<span class="nowrap">${esc(r.born)}</span>${r.pups ? `<div class="muted" style="font-size:11px">${nf(num(r.pups))} 仔</div>` : ""}`
+      : (eb ? `<span class="muted">预产 ${esc(eb)}</span>` : '<span class="muted">—</span>');
+    const weanCell = r.weanedDate
+      ? `<span class="nowrap">${esc(r.weanedDate)}</span><div class="muted" style="font-size:11px">${r.weanedCount ? "断奶 " + nf(num(r.weanedCount)) + " 只" : ""}</div>`
+      : (ew ? `<span class="tag ${dayDiff(ew) < 0 ? "bad" : "info"}">${esc(ew)}</span>` : '<span class="muted">—</span>');
+    return `<tr>
+      <td><b>${esc(r.strain || "")}</b><div class="muted" style="font-size:11.5px">${esc([r.code, r.room].filter(Boolean).join(" · "))}</div></td>
+      <td class="nowrap">${esc([r.father, r.mother].filter(Boolean).join(" × ")) || '<span class="muted">—</span>'}</td>
+      <td class="nowrap">${esc(r.paired || "")}</td>
+      <td class="nowrap">${esc(r.pregCheck || "") || '<span class="muted">—</span>'}</td>
+      <td>${bornCell}</td>
+      <td>${weanCell}</td>
+      <td><span class="tag ${st.cls}">${esc(st.label)}</span></td>
+      <td class="wrap-cell">${esc([r.purpose, r.project].filter(Boolean).join(" · ")) || '<span class="muted">—</span>'}</td>
+      <td class="nowrap">
+        <button class="btn mini" data-act="edit" data-id="${r.id}">编辑</button>
+        ${breedOpen(r) && r.born && !r.weanedDate ? `<button class="btn mini" data-act="weannow" data-id="${r.id}">断奶</button>` : ""}
+        <button class="btn mini primary" data-act="convert" data-id="${r.id}" title="按断奶只数生成一条小鼠记录">转小鼠</button>
+        <button class="btn mini danger" data-act="del" data-id="${r.id}">删</button>
+      </td></tr>`;
+  }).join("");
+  $("#breedRows").innerHTML = `<table>
+    <thead><tr>${thSort("breeding", "strain", "品系 / 编号")}<th>父母本</th>${thSort("breeding", "paired", "合笼")}<th>孕检</th>${thSort("breeding", "born", "出生 / 仔数")}${thSort("breeding", "wean", "断奶")}${thSort("breeding", "status", "状态")}<th>目的 / 项目</th><th>操作</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr><td colspan="9">显示 ${list.length} 条（进行中 ${list.filter(breedOpen).length} 条）</td></tr></tfoot>
+  </table>`;
+  paintUndo();
+}
+
+/* ============================== 视图：试剂 / 耗材 ============================== */
+const STOCK_SORT = {
+  name: r => r.name || "",
+  category: r => r.category || "",
+  qty: r => num(r.qty),
+  min: r => num(r.min),
+  value: r => stockValue(r),
+  price: r => num(r.unitPrice),
+  expiry: r => (r.expiry || "9999-12-31"),
+  location: r => r.location || "",
+  supplier: r => r.supplier || "",
+  runout: r => { const u = usageOf(ui.view === "consumables" ? "consumables" : "reagents", r); return u.daysLeft === null ? 999999 : u.daysLeft; }
+};
+
 function viewStock(kind) {
   const isRe = kind === "reagents";
   const cats = isRe ? [...new Set(state.reagents.map(r => r.category).filter(Boolean))].sort() : [];
@@ -524,156 +1226,323 @@ function viewStock(kind) {
     </div>
     <div class="cards" id="stockStats"></div>
     <div class="panel">
-      <h3>${isRe ? "试剂库存" : "耗材库存"} <em>库存数量可点「出入库」记录流水，也可以「编辑」直接改</em></h3>
+      <h3>${isRe ? "试剂库存" : "耗材库存"} <em>点「出入库」记流水（自动算金额）；「可用天数」按近 ${usageWindow()} 天出库量推算</em></h3>
       <div class="tablewrap" id="stockRows"></div>
+    </div>
+    <div class="panel">
+      <h3>补货建议 <em>可用天数 ≤ ${reorderDays()} 天或已低于下限的品种；建议量按「撑过 ${reorderDays() + 30} 天」估算</em></h3>
+      <div class="body" id="stockReorder"></div>
     </div>`;
   $("#q-stock").oninput = e => { ui.q[kind] = e.target.value; rowsStock(kind); statsStock(kind); };
   if (isRe) $("#f-cat").onchange = e => { ui.cat = e.target.value; rowsStock(kind); };
   $("#content .toolbar").onclick = e => {
-    const b = e.target.closest("button[data-act]"); if (!b) return;
+    const b = e.target.closest("button[data-act]");
+    if (!b) return;
     if (b.dataset.act === "new") openForm(kind);
     if (b.dataset.act === "csv") exportCSV(kind);
   };
   $("#stockRows").onclick = e => {
-    const b = e.target.closest("button[data-act]"); if (!b) return;
-    const id = b.dataset.id, r = state[kind].find(x => x.id === id);
-    if (b.dataset.act === "edit") openForm(kind, id);
-    if (b.dataset.act === "del") delRecord(kind, id);
-    if (b.dataset.act === "stock" && r) openStock(kind, id);
+    const b = e.target.closest("button[data-act]");
+    if (!b) return;
+    const id = b.dataset.id;
+    const act = b.dataset.act;
+    if (act === "edit") openForm(kind, id);
+    if (act === "del") delRecord(kind, id);
+    if (act === "copy") copyRecord(kind, id);
+    if (act === "stock") openStock(kind, id);
   };
-  rowsStock(kind); statsStock(kind);
+  $("#stockReorder").onclick = e => {
+    const b = e.target.closest("button[data-act]");
+    if (b && b.dataset.act === "reorder-csv") exportCSV("reorder");
+  };
+  rowsStock(kind);
+  statsStock(kind);
 }
 
 function statsStock(kind) {
   const list = filterStock(kind);
   const cats = new Set(list.map(r => r.category).filter(Boolean));
-  const low = list.filter(r => num(r.min) > 0 && num(r.qty) <= num(r.min)).length;
-  const exp = kind === "reagents" ? list.filter(r => r.expiry && expDays(r) <= (num(state.settings.expWarn) || 30)).length : 0;
+  const low = list.filter(isLow).length;
+  const run = list.filter(r => {
+    if (isLow(r)) return false;
+    const u = usageOf(kind, r);
+    return u.daysLeft !== null && u.daysLeft <= u.reorder;
+  }).length;
+  const exp = kind === "reagents" ? list.filter(r => r.expiry && expDays(r) !== null && expDays(r) <= (num(state.settings.expWarn) || 30)).length : 0;
+  const val = list.reduce((s, r) => s + stockValue(r), 0);
   $("#stockStats").innerHTML = `
     <div class="stat card"><div class="k">品种数</div><div class="v">${list.length}</div><div class="s">${kind === "reagents" ? cats.size + " 个类别" : "耗材"}</div></div>
     <div class="stat card ${low ? "warn" : "ok"}"><div class="k">库存不足</div><div class="v">${low}</div><div class="s">低于或等于下限</div></div>
+    <div class="stat card ${run ? "warn" : "ok"}"><div class="k">即将用完</div><div class="v">${run}</div><div class="s">可用 ≤ ${reorderDays()} 天</div></div>
     ${kind === "reagents"
       ? `<div class="stat card ${exp ? "warn" : "ok"}"><div class="k">临期 / 过期</div><div class="v">${exp}</div><div class="s">阈值 ${num(state.settings.expWarn) || 30} 天</div></div>`
-      : `<div class="stat card"><div class="k">单位种类</div><div class="v">${new Set(list.map(r => r.unit).filter(Boolean)).size}</div><div class="s">按单位分别统计</div></div>`}`;
+      : `<div class="stat card"><div class="k">单位种类</div><div class="v">${new Set(list.map(r => r.unit).filter(Boolean)).size}</div><div class="s">按单位分别统计</div></div>`}
+    <div class="stat card"><div class="k">库存金额</div><div class="v">${val ? "¥" + money(val) : "—"}</div><div class="s">库存 × 单价，未填单价不计</div></div>`;
 }
 
 function rowsStock(kind) {
-  const isRe = kind === "reagents", list = filterStock(kind);
+  const isRe = kind === "reagents";
+  const list = sortBy(filterStock(kind), ui.sort[kind], STOCK_SORT);
   if (!list.length) { $("#stockRows").innerHTML = `<div class="empty">还没有${isRe ? "试剂" : "耗材"}记录。</div>`; return; }
+  const warn = num(state.settings.expWarn) || 30;
   const rows = list.map(r => {
     const q = num(r.qty), m = num(r.min);
     const lowCls = m > 0 && q <= m ? "bad" : "";
+    const price = numOrNull(r.unitPrice);
+    const u = usageOf(kind, r);
+    const uCell = u.day > 0
+      ? `<td class="num" title="近 ${u.win} 天出库 ${nf2(u.sum)} ${esc(r.unit || "")}（${u.n} 笔）· 预计 ${esc(u.due)} 用完 · 建议补 ${nf2(suggestQty(u))} ${esc(r.unit || "")}">
+          <span class="muted" style="font-size:11.5px">${nf2(u.day)}${esc(r.unit ? " " + r.unit : "")}/天</span>
+          <div><span class="tag ${u.daysLeft <= 7 ? "bad" : u.daysLeft <= u.reorder ? "warn" : "info"}">${Math.max(0, Math.floor(u.daysLeft))} 天</span></div>
+        </td>`
+      : `<td class="num"><span class="muted">—</span>${u.sum > 0 ? `<div class="muted" style="font-size:11px">窗口内无出库</div>` : ""}</td>`;
     let expCell = "";
     if (isRe) {
       const d = expDays(r);
       expCell = d === null ? '<span class="muted">—</span>'
         : d < 0 ? `<span class="tag bad">过期 ${-d} 天</span>`
-        : d <= (num(state.settings.expWarn) || 30) ? `<span class="tag warn">${d} 天后</span>`
+        : d <= warn ? `<span class="tag warn">${d} 天后</span>`
         : `<span class="nowrap">${esc(r.expiry)}</span>`;
     }
     return `<tr>
       <td><b>${esc(r.name)}</b><div class="muted" style="font-size:11.5px">${esc([r.brand, r.catNo, r.spec].filter(Boolean).join(" · "))}</div></td>
       ${isRe ? `<td>${esc(r.category || "") || '<span class="muted">—</span>'}</td>` : ""}
       <td class="num"><span class="tag ${lowCls || "info"}">${nf2(q)} ${esc(r.unit || "")}</span>${m ? `<div class="muted" style="font-size:11px">下限 ${nf2(m)}</div>` : ""}</td>
+      ${uCell}
+      <td class="num">${price === null ? '<span class="muted">—</span>' : "¥" + nf2(price)}</td>
+      <td class="num">${price === null ? '<span class="muted">—</span>' : "¥" + money(q * price)}</td>
       <td>${esc(r.location || "") || '<span class="muted">—</span>'}</td>
       ${isRe ? `<td class="nowrap">${expCell}</td>` : ""}
       <td>${esc(r.supplier || "") || '<span class="muted">—</span>'}</td>
       <td class="nowrap">
         <button class="btn mini" data-act="stock" data-id="${r.id}">出入库</button>
         <button class="btn mini" data-act="edit" data-id="${r.id}">编辑</button>
+        <button class="btn mini" data-act="copy" data-id="${r.id}">复制</button>
         <button class="btn mini danger" data-act="del" data-id="${r.id}">删</button>
       </td></tr>`;
   }).join("");
-  const cols = isRe ? 6 : 4;
+  const cols = isRe ? 8 : 6;
   $("#stockRows").innerHTML = `<table>
-    <thead><tr><th>名称 / 规格</th>${isRe ? "<th>类别</th>" : ""}<th class="num">库存</th><th>存放位置</th>${isRe ? "<th>有效期</th>" : ""}<th>供应商</th><th>操作</th></tr></thead>
+    <thead><tr>${thSort(kind, "name", "名称 / 规格")}${isRe ? thSort(kind, "category", "类别") : ""}${thSort(kind, "qty", "库存", "num")}${thSort(kind, "runout", "日均 / 可用", "num")}${thSort(kind, "price", "单价", "num")}${thSort(kind, "value", "金额", "num")}<th>存放位置</th>${isRe ? thSort(kind, "expiry", "有效期") : ""}<th>供应商</th><th>操作</th></tr></thead>
     <tbody>${rows}</tbody>
-    <tfoot><tr><td colspan="${cols}">显示 ${list.length} 条</td><td></td></tr></tfoot>
+    <tfoot><tr><td colspan="${cols}">显示 ${list.length} 条 · 合计金额 ¥${money(list.reduce((s, r) => s + stockValue(r), 0))}</td><td></td></tr></tfoot>
   </table>`;
+
+  const need = reorderList(kind);
+  const box = $("#stockReorder");
+  if (box) {
+    box.innerHTML = need.length
+      ? `<div class="items">${need.map(({ r, u }) => `<div class="row">
+          <span class="tag ${u.daysLeft === null ? "warn" : u.daysLeft <= 7 ? "bad" : "warn"}">${u.daysLeft === null ? "已低于下限" : Math.max(0, Math.floor(u.daysLeft)) + " 天"}</span>
+          <b>${esc(r.name)}</b>
+          <span class="r">剩 ${nf2(num(r.qty))} ${esc(r.unit || "")}${u.day > 0 ? ` · 日均 ${nf2(u.day)} · 建议补 ${nf2(suggestQty(u))} ${esc(r.unit || "")}` : ""} · ${esc(r.supplier || "未填供应商")}</span>
+        </div>`).join("")}</div>
+        <div style="margin-top:10px"><button class="btn mini" data-act="reorder-csv">导出补货清单 CSV</button></div>`
+      : '<div class="muted">🎉 暂无需要补货的品种。</div>';
+  }
+  paintUndo();
 }
 
-/* ================= 视图：流水 ================= */
+/* 需要补货的品种（低于下限，或按当前消耗撑不到提醒天数） */
+function reorderList(kind) {
+  return state[kind]
+    .map(r => ({ r, u: usageOf(kind, r) }))
+    .filter(o => isLow(o.r) || (o.u.daysLeft !== null && o.u.daysLeft <= o.u.reorder))
+    .sort((a, b) => (a.u.daysLeft === null ? 1e9 : a.u.daysLeft) - (b.u.daysLeft === null ? 1e9 : b.u.daysLeft));
+}
+
+
+/* ============================== 视图：流水 ============================== */
+function costSummary(list) {
+  const byProject = {};
+  list.forEach(l => {
+    if (l.action !== "出库") return;
+    const k = l.project || "(未归属项目)";
+    const o = byProject[k] || (byProject[k] = { n: 0, qty: 0, amount: 0 });
+    o.n++;
+    o.qty += num(l.qty);
+    o.amount += num(l.amount);
+  });
+  const byItem = {};
+  list.forEach(l => {
+    if (l.action !== "出库") return;
+    const k = (l.kind === "reagents" ? "试剂 · " : "耗材 · ") + (l.itemName || "");
+    const o = byItem[k] || (byItem[k] = { n: 0, qty: 0, amount: 0 });
+    o.n++;
+    o.qty += num(l.qty);
+    o.amount += num(l.amount);
+  });
+  return { byProject, byItem };
+}
+
 function viewLogs() {
+  const projects = [...new Set(state.logs.map(l => l.project).filter(Boolean))].sort();
   $("#content").innerHTML = `
     <div class="toolbar">
-      <input id="q-logs" class="search" placeholder="搜索 物品 / 操作人 / 备注" value="${esc(ui.q.logs)}">
+      <input id="q-logs" class="search" placeholder="搜索 物品 / 操作人 / 备注 / 项目" value="${esc(ui.q.logs)}">
       <select id="f-kind">
         <option value="all"${ui.logKind === "all" ? " selected" : ""}>全部类型</option>
         <option value="reagents"${ui.logKind === "reagents" ? " selected" : ""}>试剂</option>
         <option value="consumables"${ui.logKind === "consumables" ? " selected" : ""}>耗材</option>
       </select>
+      <select id="f-proj"><option value="all">全部项目</option>${projects.map(p => `<option value="${esc(p)}"${ui.logProject === p ? " selected" : ""}>${esc(p)}</option>`).join("")}</select>
       <button class="btn" data-act="csv">导出 CSV</button>
     </div>
     <div class="cards" id="logStats"></div>
     <div class="panel">
-      <h3>出入库流水 <em>删除流水不会回滚库存</em></h3>
+      <h3>出入库流水 <em>删除流水不会回滚库存；出库填了项目就自动进成本统计</em></h3>
       <div class="tablewrap" id="logRows"></div>
-    </div>`;
-  $("#q-logs").oninput = e => { ui.q.logs = e.target.value; rowsLogs(); };
+    </div>
+    <div class="grid2" id="costPanels"></div>`;
+  $("#q-logs").oninput = e => { ui.q.logs = e.target.value; rowsLogs(); statsLogs(); };
   $("#f-kind").onchange = e => { ui.logKind = e.target.value; rowsLogs(); statsLogs(); };
+  $("#f-proj").onchange = e => { ui.logProject = e.target.value; rowsLogs(); statsLogs(); };
   $("#content .toolbar").onclick = e => {
     if (e.target.closest("button[data-act=csv]")) exportCSV("logs");
   };
   $("#logRows").onclick = e => {
-    const b = e.target.closest("button[data-act=del]"); if (!b) return;
-    const l = state.logs.find(x => x.id === b.dataset.id); if (!l) return;
-    if (!confirm(`删除这条流水？\n${l.date} ${l.itemName} ${l.action} ${l.qty}`)) return;
+    const b = e.target.closest("button[data-act=del]");
+    if (!b) return;
+    const l = state.logs.find(x => x.id === b.dataset.id);
+    if (!l) return;
+    if (!confirm(`删除这条流水？\n${l.date} ${l.itemName} ${l.action} ${l.qty}\n（库存不会回滚）`)) return;
+    pushUndo("删除流水");
     state.logs = state.logs.filter(x => x.id !== b.dataset.id);
-    save(); rowsLogs(); statsLogs(); toast("已删除");
+    save();
+    rowsLogs();
+    statsLogs();
+    toast("已删除流水");
   };
-  rowsLogs(); statsLogs();
+  rowsLogs();
+  statsLogs();
 }
 
 function statsLogs() {
   const list = filterLogs();
-  const inQ = list.filter(l => l.action === "入库").length, outQ = list.filter(l => l.action === "出库").length;
+  const inQ = list.filter(l => l.action === "入库").length;
+  const outQ = list.filter(l => l.action === "出库").length;
   const last = list[0] ? list[0].date : "—";
+  const month = todayStr().slice(0, 7);
+  const monthOut = list.filter(l => l.action === "出库" && (l.date || "").slice(0, 7) === month).reduce((s, l) => s + num(l.amount), 0);
   $("#logStats").innerHTML = `
     <div class="stat card"><div class="k">流水条数</div><div class="v">${list.length}</div><div class="s">最近 ${esc(last)}</div></div>
     <div class="stat card"><div class="k">入库</div><div class="v" style="color:var(--ok)">${inQ}</div><div class="s">次</div></div>
-    <div class="stat card"><div class="k">出库</div><div class="v" style="color:var(--accent-d)">${outQ}</div><div class="s">次</div></div>`;
+    <div class="stat card"><div class="k">出库</div><div class="v" style="color:var(--accent-d)">${outQ}</div><div class="s">次</div></div>
+    <div class="stat card"><div class="k">本月出库金额</div><div class="v">${monthOut ? "¥" + money(monthOut) : "—"}</div><div class="s">${month} · 按单价推算</div></div>`;
+  paintCostPanels();
 }
+
+function paintCostPanels() {
+  const list = filterLogs();
+  const { byProject, byItem } = costSummary(list);
+  const projRows = Object.entries(byProject).sort((a, b) => b[1].amount - a[1].amount).map(([k, o]) =>
+    `<tr><td><b>${esc(k)}</b></td><td class="num">${o.n}</td><td class="num">${nf2(o.qty)}</td><td class="num">¥${money(o.amount)}</td></tr>`).join("");
+  const itemRows = Object.entries(byItem).sort((a, b) => b[1].amount - a[1].amount).slice(0, 10).map(([k, o]) =>
+    `<tr><td>${esc(k)}</td><td class="num">${nf2(o.qty)}</td><td class="num">¥${money(o.amount)}</td></tr>`).join("");
+  const total = Object.values(byProject).reduce((s, o) => s + o.amount, 0);
+  $("#costPanels").innerHTML = `
+    <div class="panel">
+      <h3>项目成本 <em>按「出库」流水汇总，需在试剂/耗材上填单价</em></h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>项目</th><th class="num">出库次数</th><th class="num">数量</th><th class="num">金额</th></tr></thead>
+          <tbody>${projRows || '<tr><td colspan="4" class="empty">还没有带项目的出库流水</td></tr>'}</tbody>
+          <tfoot><tr><td>合计</td><td class="num"></td><td class="num"></td><td class="num">¥${money(total)}</td></tr></tfoot>
+        </table>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>消耗最多 <em>前 10 项（按出库金额）</em></h3>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>物品</th><th class="num">数量</th><th class="num">金额</th></tr></thead>
+          <tbody>${itemRows || '<tr><td colspan="3" class="empty">暂无出库流水</td></tr>'}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
 function rowsLogs() {
   const list = filterLogs();
   if (!list.length) { $("#logRows").innerHTML = '<div class="empty">暂无流水记录。</div>'; return; }
   $("#logRows").innerHTML = `<table>
-    <thead><tr><th>日期</th><th>类型</th><th>物品</th><th>动作</th><th class="num">数量</th><th>操作人</th><th>备注</th><th></th></tr></thead>
+    <thead><tr><th>日期</th><th>类型</th><th>物品</th><th>动作</th><th class="num">数量</th><th class="num">单价</th><th class="num">金额</th><th>项目</th><th>操作人</th><th>备注</th><th></th></tr></thead>
     <tbody>${list.map(l => `<tr>
       <td class="nowrap">${esc(l.date || "")}</td>
       <td>${l.kind === "reagents" ? "试剂" : "耗材"}</td>
       <td>${esc(l.itemName)}</td>
       <td><span class="tag ${l.action === "入库" ? "ok" : "info"}">${esc(l.action)}</span></td>
       <td class="num">${nf2(num(l.qty))} ${esc(l.unit || "")}</td>
+      <td class="num">${l.unitPrice === null || l.unitPrice === undefined ? '<span class="muted">—</span>' : "¥" + nf2(num(l.unitPrice))}</td>
+      <td class="num">${l.amount === null || l.amount === undefined ? '<span class="muted">—</span>' : "¥" + money(num(l.amount))}</td>
+      <td>${esc(l.project || "") || '<span class="muted">—</span>'}</td>
       <td>${esc(l.operator || "")}</td>
       <td class="wrap-cell">${esc(l.note || "")}</td>
       <td><button class="btn mini ghost" data-act="del" data-id="${l.id}">删</button></td></tr>`).join("")}</tbody>
   </table>`;
+  paintUndo();
 }
 
-/* ================= 视图：数据 ================= */
+/* ============================== 视图：数据 · 设置 ============================== */
 function viewData() {
   const bytes = new Blob([JSON.stringify(state)]).size;
+  const snaps = snapshotInfo();
+  const snapValue = (num(state.settings.snapshots) || 7);
+  const kindOpts = [["mice", "小鼠记录"], ["breeding", "繁育记录"], ["reagents", "试剂"], ["consumables", "耗材"]]
+    .map(([k, l]) => `<option value="${k}"${importState.kind === k ? " selected" : ""}>${l}</option>`).join("");
+
   $("#content").innerHTML = `
     <div class="grid2">
       <div class="panel">
-        <h3>备份与恢复 <em>强烈建议每周导出一次</em></h3>
+        <h3>备份与恢复 <em>建议每周导出一次</em></h3>
         <div class="body hintbox">
-          数据保存在本机浏览器里（<code>localStorage</code>），换电脑、换浏览器、清理浏览器数据都不会自动带走，所以要用 JSON 文件留底。
+          数据保存在本机浏览器里（<code>localStorage</code>），换电脑、换浏览器、清浏览器数据都不会自动带走，所以要用 JSON 文件留底。
           <div style="margin:12px 0;display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn primary" data-act="bk">⬇ 下载 JSON 备份</button>
             <button class="btn" data-act="rs">⬆ 从 JSON 恢复</button>
             <input type="file" id="fileImport" accept=".json,application/json" style="display:none">
           </div>
-          <div>当前数据量：<b>${(bytes / 1024).toFixed(1)} KB</b> · 小鼠 ${state.mice.length} 条 · 试剂 ${state.reagents.length} 条 · 耗材 ${state.consumables.length} 条 · 流水 ${state.logs.length} 条</div>
+          <div>当前数据量：<b>${(bytes / 1024).toFixed(1)} KB</b> · 小鼠 ${state.mice.length} · 繁育 ${state.breeding.length} · 试剂 ${state.reagents.length} · 耗材 ${state.consumables.length} · 流水 ${state.logs.length}</div>
         </div>
       </div>
 
       <div class="panel">
+        <h3>每日自动快照 <em>每天第一次保存时自动留一份，最多 ${snapValue} 份（占 ${(snaps.bytes / 1024).toFixed(1)} KB）</em></h3>
+        <div class="body">
+          ${snaps.list.length ? `<div class="items">${snaps.list.map(s => `<div class="row">
+            <b>${esc(s.date)}</b>
+            <span class="r">${(s.json.length / 1024).toFixed(1)} KB</span>
+            <button class="btn mini" data-act="snap" data-date="${esc(s.date)}">恢复</button>
+          </div>`).join("")}</div>` : '<div class="muted">还没有快照：改动一次数据后就会自动生成。</div>'}
+          <div style="margin-top:10px"><button class="btn mini danger" data-act="snap-clear">清空所有快照</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>导入表格 <em>从 Excel / WPS / Numbers 复制粘贴，或选 .csv / .tsv 文件；表头会自动识别</em></h3>
+      <div class="body">
+        <div class="toolbar">
+          <select id="imp-kind">${kindOpts}</select>
+          <button class="btn" data-act="imp-file">📄 选择文件…</button>
+          <input type="file" id="impFile" accept=".csv,.tsv,.txt,text/csv" style="display:none">
+          <button class="btn" data-act="imp-parse">解析预览</button>
+          <button class="btn primary" data-act="imp-do">确认导入</button>
+          <button class="btn" data-act="imp-clear">清空</button>
+        </div>
+        <textarea id="imp-text" rows="5" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px" placeholder="把整块表格（含表头一行）粘贴到这里，例如：&#10;品系	性别	笼数	只数/笼	实验目的&#10;C57BL/6J	雄	6	5	MC38 荷瘤"></textarea>
+        <div id="imp-preview" style="margin-top:12px">${importPreviewHTML()}</div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="panel">
         <h3>导出 Excel / 表格</h3>
         <div class="body hintbox">
-          导出的是 CSV（UTF-8 BOM），双击即可用 Excel / WPS 打开，中文不乱码。
+          导出的是 CSV（UTF-8 BOM），双击即可用 Excel / WPS 打开，中文不乱码；导出的表头可以直接再导入回来。
           <div style="margin:12px 0;display:flex;gap:8px;flex-wrap:wrap">
-            <button class="btn" data-act="e-mice">小鼠记录 CSV</button>
+            <button class="btn" data-act="e-mice">小鼠 CSV</button>
+            <button class="btn" data-act="e-breeding">繁育 CSV</button>
             <button class="btn" data-act="e-reagents">试剂 CSV</button>
             <button class="btn" data-act="e-consumables">耗材 CSV</button>
             <button class="btn" data-act="e-logs">流水 CSV</button>
@@ -683,48 +1552,81 @@ function viewData() {
       </div>
 
       <div class="panel">
-        <h3>设置</h3>
+        <h3>参数设置</h3>
         <div class="body hintbox">
-          <label style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
-            有效期提前提醒天数
-            <input type="number" id="expWarn" min="1" max="365" value="${num(state.settings.expWarn) || 30}" style="width:90px;padding:6px 8px;border:1px solid var(--line);border-radius:8px">
-            天
-            <button class="btn mini" data-act="saveWarn">保存</button>
-          </label>
-          <div>周龄一律按“今天”实时换算；只要填了出生日期，周龄会自动增长。</div>
+          <div class="setting"><span>有效期提前提醒</span>
+            <input type="number" id="set-exp" min="1" max="365" value="${num(state.settings.expWarn) || 30}"><em>天</em></div>
+          <div class="setting"><span>小鼠妊娠天数</span>
+            <input type="number" id="set-gest" min="1" max="60" value="${gestDays()}"><em>天（默认 20）</em></div>
+          <div class="setting"><span>仔鼠断奶天数</span>
+            <input type="number" id="set-wean" min="1" max="60" value="${weanDays()}"><em>天（默认 21）</em></div>
+          <div class="setting"><span>保留自动快照</span>
+            <input type="number" id="set-snap" min="1" max="30" value="${snapValue}"><em>份</em></div>
+          <div class="setting"><span>消耗统计窗口</span>
+            <input type="number" id="set-usage" min="7" max="730" value="${usageWindow()}"><em>天（用这段出库量算日均）</em></div>
+          <div class="setting"><span>提前提醒补货</span>
+            <input type="number" id="set-reorder" min="1" max="365" value="${reorderDays()}"><em>天（可用天数低于它就算「即将用完」）</em></div>
+          <div style="margin-top:10px"><button class="btn primary" data-act="save-set">保存设置</button></div>
+          <div style="margin-top:8px">周龄一律按“今天”实时换算；填了出生日期就会自动增长。<br>主题（浅色 / 深色 / 跟随系统）点右上角的 🌓 切换。</div>
         </div>
       </div>
+    </div>
 
-      <div class="panel">
-        <h3>其他</h3>
-        <div class="body hintbox">
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-            <button class="btn" data-act="demo">载入示例数据</button>
-            <button class="btn danger" data-act="clear">清空全部数据</button>
-          </div>
-          <div>• 多人同时用：不要把这个文件放在共享盘各自打开，会产生多份互不同步的数据。需要多人共用请告诉我，我改成局域网小服务器版本（SQLite 存一份，大家浏览器访问）。
-          <br>• 手机/平板：文件拷过去用浏览器打开也能用，但两端数据不互通。</div>
+    <div class="panel">
+      <h3>其他</h3>
+      <div class="body hintbox">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <button class="btn" data-act="demo">载入示例数据</button>
+          <button class="btn" data-act="clear">清空全部数据</button>
         </div>
+        <div>• 数据版本 v${state.meta.v} · 单文件离线版，不上传任何数据。
+        <br>• 多人同时用：不要把这个文件放在共享盘各自打开，会产生多份互不同步的数据。
+        <br>• 手机/平板：文件拷过去用浏览器打开也能用，但与本机数据不互通（用 JSON 备份搬运）。</div>
       </div>
     </div>`;
 
   $("#content").onclick = e => {
-    const b = e.target.closest("button[data-act]"); if (!b) return;
+    const b = e.target.closest("button[data-act]");
+    if (!b) return;
     const act = b.dataset.act;
     if (act === "bk") backupJSON();
     if (act === "rs") $("#fileImport").click();
     if (act.startsWith("e-")) exportCSV(act.slice(2));
-    if (act === "saveWarn") {
-      state.settings.expWarn = Math.max(1, num($("#expWarn").value) || 30);
-      save(); toast("已保存提醒天数");
-    }
+    if (act === "save-set") saveSettings();
     if (act === "demo") loadDemo();
     if (act === "clear") clearAll();
+    if (act === "snap") restoreSnapshot(b.dataset.date);
+    if (act === "snap-clear") {
+      if (!confirm("清空所有自动快照？当前数据不受影响。")) return;
+      localStorage.removeItem(SNAP_KEY);
+      render();
+      toast("快照已清空");
+    }
+    if (act === "imp-file") $("#impFile").click();
+    if (act === "imp-parse") previewImport();
+    if (act === "imp-do") doImport();
+    if (act === "imp-clear") { importState = { kind: importState.kind, records: [], dups: 0, headers: [] }; $("#imp-text").value = ""; $("#imp-preview").innerHTML = importPreviewHTML(); }
   };
+  $("#imp-kind").onchange = e => { importState.kind = e.target.value; importState.records = []; importState.dups = 0; $("#imp-preview").innerHTML = importPreviewHTML(); };
   $("#fileImport").onchange = e => importJSON(e.target.files[0]);
+  $("#impFile").onchange = e => readImportFile(e.target.files[0]);
 }
 
-/* ================= 表单弹窗 ================= */
+function saveSettings() {
+  pushUndo("修改设置");
+  state.settings.expWarn = Math.max(1, Math.min(365, num($("#set-exp").value) || 30));
+  state.settings.gestDays = Math.max(1, Math.min(60, num($("#set-gest").value) || 20));
+  state.settings.weanDays = Math.max(1, Math.min(60, num($("#set-wean").value) || 21));
+  state.settings.snapshots = Math.max(1, Math.min(30, num($("#set-snap").value) || 7));
+  state.settings.usageDays = Math.max(7, Math.min(730, num($("#set-usage").value) || 90));
+  state.settings.reorderDays = Math.max(1, Math.min(365, num($("#set-reorder").value) || 30));
+  save();
+  render();
+  toast("设置已保存");
+}
+
+
+/* ============================== 表单弹窗 ============================== */
 let editing = { kind: null, id: null };
 
 function fieldHTML(kind, f, val) {
@@ -750,16 +1652,23 @@ function fieldHTML(kind, f, val) {
   return `<label class="field${f.wide ? " wide" : ""}"><span>${esc(f.l)}${f.req ? " <b>*</b>" : ""}</span>${input}${f.hint ? `<em>${esc(f.hint)}</em>` : ""}</label>`;
 }
 
+/* 下拉自动补全的值：本表已有值 + 自定义补充 */
+function listValues(kind, key, extra) {
+  const vals = new Set(state[kind].map(r => r[key]).filter(v => v !== "" && v !== null && v !== undefined));
+  (extra || []).forEach(v => { if (v) vals.add(v); });
+  return [...vals];
+}
+
 function openForm(kind, id) {
   const fields = SCHEMA[kind];
   const rec = id ? state[kind].find(x => x.id === id) : null;
   editing = { kind, id: id || null };
   const isNew = !rec;
-  const title = { mice: "小鼠记录", reagents: "试剂", consumables: "耗材" }[kind];
+  const title = { mice: "小鼠记录", breeding: "繁育配对", reagents: "试剂", consumables: "耗材" }[kind];
 
-  // 自动补全数据源
+  const extra = kind === "mice" ? listValues("breeding", "strain") : [];
   const dl = fields.filter(f => f.list).map(f => {
-    const vals = [...new Set(state[kind].map(r => r[f.k]).filter(v => v !== "" && v !== null && v !== undefined))];
+    const vals = listValues(kind, f.k, f.k === "strain" ? extra : []);
     return `<datalist id="dl_${kind}_${f.k}">${vals.map(v => `<option value="${esc(v)}">`).join("")}</datalist>`;
   }).join("");
 
@@ -771,24 +1680,46 @@ function openForm(kind, id) {
   if (first) setTimeout(() => first.focus(), 30);
 
   if (kind === "mice") hookMouseForm();
+  if (kind === "breeding") hookBreedForm();
   $("#mForm").onsubmit = onSubmitForm;
 }
 
 function hookMouseForm() {
   const c = $("#f_cages"), p = $("#f_perCage"), dob = $("#f_dob"), aw = $("#f_ageWeeks"), ad = $("#f_ageDate");
   const hint = $("#mHint");
+  if (!c || !p) return;
   const upd = () => {
     const t = num(c.value) * num(p.value);
     let s = `合计 <span class="total">${nf(t)}</span> 只`;
     if (dob.value) {
       const w = (Date.now() - new Date(dob.value + "T00:00:00").getTime()) / 86400000 / 7;
-      s += ` · 按出生日期推算 <b>${nf(w)} 周</b>`;
+      s += ` · 按出生日期约 <span class="total">${nf(w)}</span> 周`;
     } else if (aw.value) {
       s += ` · 手填周龄 ${nf(num(aw.value))} 周`;
+      if (ad.value) s += `（截至 ${esc(ad.value)}，按今天已 ${nf(num(aw.value) + (dayDiff(ad.value) || 0) / -7)} 周）`;
     }
     hint.innerHTML = s;
   };
-  [c, p, dob, aw].forEach(el => el && el.addEventListener("input", upd));
+  [c, p, dob, aw, ad].forEach(el => el && el.addEventListener("input", upd));
+  upd();
+}
+
+function hookBreedForm() {
+  const paired = $("#f_paired"), born = $("#f_born"), weaned = $("#f_weanedDate");
+  const hint = $("#mHint");
+  if (!paired) return;
+  const upd = () => {
+    const parts = [];
+    if (born.value) {
+      parts.push(`已出生 ${Math.max(0, -dayDiff(born.value))} 天`);
+      if (!weaned.value) parts.push(`预计 ${addDays(born.value, weanDays())} 断奶`);
+    } else if (paired.value) {
+      parts.push(`预计 ${addDays(paired.value, gestDays())} 生产（合笼 + ${gestDays()} 天）`);
+    }
+    if (weaned.value) parts.push(`已于 ${weaned.value} 断奶`);
+    hint.innerHTML = parts.join(" · ") || "填「合笼日期」后自动推算预产期";
+  };
+  [paired, born, weaned].forEach(el => el && el.addEventListener("input", upd));
   upd();
 }
 
@@ -797,9 +1728,9 @@ function readForm(kind) {
   SCHEMA[kind].forEach(f => {
     const el = document.getElementById("f_" + f.k);
     if (!el) return;
-    let v = el.value;
+    const v = el.value;
     if (f.t === "number") out[f.k] = v === "" ? null : num(v);
-    else out[f.k] = v.trim();
+    else out[f.k] = String(v).trim();
   });
   return out;
 }
@@ -807,16 +1738,28 @@ function readForm(kind) {
 function onSubmitForm(ev) {
   ev.preventDefault();
   const { kind, id } = editing;
+  if (!kind || !SCHEMA[kind]) return;
   const data = readForm(kind);
   const missing = SCHEMA[kind].filter(f => f.req && (data[f.k] === "" || data[f.k] === null)).map(f => f.l);
   if (missing.length) { toast("请填写：" + missing.join("、"), true); return; }
+  if (kind === "mice" && totalMice(data) <= 0) { toast("笼子数量和只数/笼都要大于 0，否则总只数为 0", true); return; }
+  if (kind === "breeding" && data.born && data.paired && data.born < data.paired) {
+    toast("出生日期早于合笼日期，请检查", true);
+    return;
+  }
+  /* 繁育状态随里程碑自动推进（用户手动选了「已结束」则不动） */
+  if (kind === "breeding" && data.status !== "已结束") {
+    if (data.weanedDate) data.status = "已断奶";
+    else if (data.born) { if (data.status === "配对中") data.status = "哺乳"; }
+    else if (data.pregCheck && data.status === "配对中") data.status = "怀孕";
+  }
 
+  pushUndo(id ? `编辑${KIND_LABEL[kind]}` : `新增${KIND_LABEL[kind]}`);
   if (id) {
     const rec = state[kind].find(x => x.id === id);
-    Object.assign(rec, data, { updatedAt: new Date().toISOString() });
+    Object.assign(rec, normalizeRecord(kind, data), { updatedAt: new Date().toISOString() });
   } else {
-    state[kind].unshift(Object.assign({ id: uid(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }, data));
-    if (kind === "mice" && !data.status) state[kind][0].status = "在养";
+    state[kind].unshift(Object.assign({ id: uid(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }, normalizeRecord(kind, data)));
   }
   save();
   closeModal();
@@ -831,54 +1774,150 @@ function closeModal() {
 }
 
 function delRecord(kind, id) {
-  const rec = state[kind].find(x => x.id === id); if (!rec) return;
-  const name = kind === "mice" ? `${rec.strain}（${rec.purpose || ""}）` : rec.name;
-  if (!confirm(`确定删除「${name}」？\n此操作不可撤销。`)) return;
+  const rec = state[kind].find(x => x.id === id);
+  if (!rec) return;
+  const name = kind === "mice" ? `${rec.strain}（${rec.purpose || ""}）`
+    : kind === "breeding" ? `${rec.strain || ""} ${rec.code || ""}`
+    : rec.name;
+  if (!confirm(`确定删除「${name}」？\n删掉后可以按 Ctrl+Z 撤销。`)) return;
+  pushUndo("删除" + KIND_LABEL[kind]);
   state[kind] = state[kind].filter(x => x.id !== id);
-  save(); render(); toast("已删除");
+  save();
+  render();
+  toast("已删除，Ctrl+Z 可撤销");
 }
 
-/* ================= 出入库 ================= */
+function copyRecord(kind, id) {
+  const rec = state[kind].find(x => x.id === id);
+  if (!rec) return;
+  pushUndo("复制" + KIND_LABEL[kind]);
+  const copy = Object.assign({}, rec, { id: uid(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+  state[kind].unshift(normalizeRecord(kind, copy));
+  save();
+  render();
+  openForm(kind, copy.id);
+  toast("已复制一条，改完笼号/耳号再保存");
+}
+
+/* ============================== 出入库 ============================== */
 function openStock(kind, id) {
-  const r = state[kind].find(x => x.id === id); if (!r) return;
+  const r = state[kind].find(x => x.id === id);
+  if (!r) return;
   editing = { kind: "__stock", id };
+  const projects = [...new Set(state.logs.map(l => l.project).filter(Boolean))].sort();
+  const price = numOrNull(r.unitPrice);
   $("#mTitle").textContent = `${r.name} · 出入库`;
   $("#mBody").innerHTML = `
-    <div class="field wide"><span>当前库存</span><div style="padding:6px 0;font-weight:700;font-size:16px">${nf2(num(r.qty))} ${esc(r.unit || "")}</div></div>
+    <div class="field wide"><span>当前库存</span><div style="padding:6px 0;font-weight:700;font-size:16px">${nf2(num(r.qty))} ${esc(r.unit || "")}${price !== null ? ` <span class="muted" style="font-size:12px;font-weight:400">· 单价 ¥${nf2(price)}</span>` : ""}</div></div>
     <label class="field"><span>日期</span><input type="date" name="date" value="${todayStr()}"></label>
     <label class="field"><span>动作</span><select name="action"><option>入库</option><option>出库</option></select></label>
     <label class="field"><span>数量 <b>*</b></span><input type="number" name="qty" step="any" min="0" placeholder="如 1"></label>
+    <label class="field"><span>单价（元 / 单位）</span><input type="number" name="unitPrice" step="any" min="0" value="${price === null ? "" : esc(price)}" placeholder="留空则不计成本"></label>
+    <label class="field"><span>项目 / 课题</span><input type="text" name="project" list="dl-projects" placeholder="如 PD-1 联合治疗"><datalist id="dl-projects">${projects.map(p => `<option value="${esc(p)}">`).join("")}</datalist></label>
     <label class="field"><span>操作人</span><input type="text" name="operator" placeholder="姓名"></label>
     <label class="field wide"><span>备注</span><textarea name="note" rows="2" placeholder="如 新到货 / 实验消耗 / 借出"></textarea></label>`;
   $("#mHint").innerHTML = "";
   $("#modal").classList.remove("hidden");
-  setTimeout(() => { const q = $('[name="qty"]'); q && q.focus(); }, 30);
+  const qtyEl = $('[name="qty"]'), priceEl = $('[name="unitPrice"]');
+  const upd = () => {
+    const q = num(qtyEl.value), p = numOrNull(priceEl.value);
+    $("#mHint").innerHTML = p === null ? "填单价后自动算金额" : `本次金额约 <span class="total">¥${money(q * p)}</span>`;
+  };
+  [qtyEl, priceEl].forEach(el => el && el.addEventListener("input", upd));
+  upd();
+  setTimeout(() => qtyEl && qtyEl.focus(), 30);
+
   $("#mForm").onsubmit = ev => {
     ev.preventDefault();
     const fd = new FormData($("#mForm"));
     const qty = num(fd.get("qty"));
     if (qty <= 0) { toast("数量必须大于 0", true); return; }
-    const action = fd.get("action");
+    const action = String(fd.get("action"));
     if (action === "出库" && qty > num(r.qty)) { toast(`库存不足，当前只有 ${nf2(num(r.qty))} ${r.unit || ""}`, true); return; }
+    const unitPrice = numOrNull(fd.get("unitPrice"));
+    pushUndo(`${action} ${r.name}`);
     r.qty = Math.round((num(r.qty) + (action === "入库" ? qty : -qty)) * 100) / 100;
+    if (unitPrice !== null) r.unitPrice = unitPrice;
     r.updatedAt = new Date().toISOString();
     state.logs.push({
       id: uid(), ts: Date.now(), date: String(fd.get("date")) || todayStr(),
       kind, itemId: r.id, itemName: r.name, unit: r.unit || "",
-      action, qty, operator: String(fd.get("operator") || "").trim(), note: String(fd.get("note") || "").trim()
+      action, qty,
+      unitPrice,
+      amount: unitPrice === null ? null : Math.round(qty * unitPrice * 100) / 100,
+      project: String(fd.get("project") || "").trim(),
+      operator: String(fd.get("operator") || "").trim(),
+      note: String(fd.get("note") || "").trim()
     });
-    save(); closeModal(); render();
+    save();
+    closeModal();
+    render();
     toast(`${action}成功，当前 ${nf2(num(r.qty))} ${r.unit || ""}`);
   };
 }
 
-/* ================= 打印笼牌 ================= */
+/* ============================== 繁育 → 小鼠 ============================== */
+function openConvert(id) {
+  const r = state.breeding.find(x => x.id === id);
+  if (!r) return;
+  editing = { kind: "__convert", id };
+  const count = num(r.weanedCount) || num(r.pups) || 0;
+  const cages = num(r.destCages) || (count ? Math.ceil(count / 5) : 1);
+  const perCage = num(r.destPerCage) || (cages ? Math.max(1, Math.round(count / cages)) : 5);
+  $("#mTitle").textContent = `转成小鼠记录 · ${r.strain} ${r.code || ""}`;
+  $("#mBody").innerHTML = `
+    <div class="field wide"><span>来源</span><div class="muted" style="padding:4px 0">
+      ${esc(r.strain)} · 父 ${esc(r.father || "-")} × 母 ${esc(r.mother || "-")} · 出生 ${esc(r.born || "—")} · ${count ? count + " 只仔鼠" : "未填仔数"}
+    </div></div>
+    <label class="field"><span>笼子数量 <b>*</b></span><input type="number" name="cages" step="1" min="1" value="${cages}"></label>
+    <label class="field"><span>只数 / 笼 <b>*</b></span><input type="number" name="perCage" step="1" min="1" value="${perCage}"></label>
+    <label class="field"><span>性别</span><select name="sex"><option>混合</option><option>雄</option><option>雌</option></select></label>
+    <label class="field"><span>出生日期</span><input type="date" name="dob" value="${esc(r.born || "")}"></label>
+    <label class="field wide"><span>实验目的</span><textarea name="purpose" rows="2">${esc(r.purpose || "繁育自产，断奶后备用")}</textarea></label>
+    <label class="field"><span>项目 / 课题</span><input type="text" name="project" value="${esc(r.project || "")}"></label>
+    <label class="field"><span>房间 / 架位</span><input type="text" name="room" value="${esc(r.room || "")}"></label>
+    <label class="field"><span>负责人</span><input type="text" name="keeper" value="${esc(r.keeper || "")}"></label>`;
+  $("#mHint").innerHTML = "";
+  $("#modal").classList.remove("hidden");
+  const cagesEl = $('[name="cages"]'), perEl = $('[name="perCage"]');
+  const upd = () => { $("#mHint").innerHTML = `合计 <span class="total">${nf(num(cagesEl.value) * num(perEl.value))}</span> 只`; };
+  [cagesEl, perEl].forEach(el => el && el.addEventListener("input", upd));
+  upd();
+
+  $("#mForm").onsubmit = ev => {
+    ev.preventDefault();
+    const fd = new FormData($("#mForm"));
+    const data = {
+      strain: r.strain, sex: String(fd.get("sex")), cages: num(fd.get("cages")), perCage: num(fd.get("perCage")),
+      dob: isoDate(fd.get("dob")), purpose: String(fd.get("purpose") || "").trim() || "繁育自产",
+      project: String(fd.get("project") || "").trim(), room: String(fd.get("room") || "").trim(),
+      keeper: String(fd.get("keeper") || "").trim(),
+      earTag: r.code ? "配对 " + r.code : "", status: "在养",
+      note: `由繁育台账转入（配对 ${r.code || "-"}，母 ${r.mother || "-"}）`
+    };
+    if (totalMice(data) <= 0) { toast("笼数和只数/笼必须大于 0", true); return; }
+    pushUndo("繁育转小鼠");
+    state.mice.unshift(Object.assign({ id: uid(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }, normalizeRecord("mice", data)));
+    if (!r.weanedDate) r.weanedDate = todayStr();
+    if (!r.weanedCount) r.weanedCount = count || totalMice(data);
+    r.status = "已断奶";
+    r.updatedAt = new Date().toISOString();
+    save();
+    closeModal();
+    setView("mice");
+    toast("已生成小鼠记录，共 " + nf(totalMice(data)) + " 只");
+  };
+}
+
+/* ============================== 打印笼牌 ============================== */
 function printCages() {
   const list = filterMice().filter(isActive);
   if (!list.length) { toast("当前筛选下没有在养记录", true); return; }
   const date = todayStr();
-  $("#printArea").innerHTML = `<h2 style="font-family:'Microsoft YaHei';margin:0 0 6mm">笼牌 · ${date} · 共 ${list.length} 条 / ${nf(list.reduce((s, r) => s + num(r.cages), 0))} 笼</h2>
-    <div class="cage-grid">${list.map(r => {
+  const layout = state.settings.cardLayout || "6";
+  const cages = list.reduce((s, r) => s + num(r.cages), 0);
+  $("#printArea").innerHTML = `<h2 class="print-h">笼牌 · ${date} · 共 ${list.length} 条 / ${nf(cages)} 笼</h2>
+    <div class="cage-grid l${layout}">${list.map(r => {
       const a = ageOf(r);
       return `<div class="cage">
         <div class="t">${esc(r.strain || "")} ${esc(r.sex ? "· " + r.sex : "")}</div>
@@ -895,23 +1934,11 @@ function printCages() {
   window.print();
 }
 
-/* ================= 导入导出 ================= */
-function download(text, filename, mime) {
-  const blob = new Blob([text], { type: mime || "text/plain;charset=utf-8" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-}
-function backupJSON() {
-  const stamp = todayStr().replace(/-/g, "");
-  download(JSON.stringify(state, null, 2), `实验室管理备份-${stamp}.json`, "application/json");
-  toast("备份已下载");
-}
+
+/* ============================== CSV 导出 ============================== */
 function csvCell(v) {
   const s = String(v ?? "");
-  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
 }
 function toCSV(headers, rows) {
   return "\ufeff" + [headers.map(csvCell).join(",")].concat(rows.map(r => r.map(csvCell).join(","))).join("\r\n");
@@ -921,125 +1948,402 @@ function exportCSV(kind) {
   let csv = "", name = "";
   if (kind === "mice") {
     name = `小鼠记录-${stamp}.csv`;
-    const rows = filterMice().map(r => {
+    const rows = sortBy(filterMice(), ui.sort.mice, MICE_SORT).map(r => {
       const a = ageOf(r);
       return [r.strain, r.sex, a.w === null ? "" : nf(a.w), r.dob || "", r.cages, r.perCage, totalMice(r),
         r.purpose, r.project, r.earTag, r.room, r.keeper, r.status || "在养", r.note];
     });
     csv = toCSV(["品系", "性别", "周龄", "出生日期", "笼数", "只数/笼", "总只数", "实验目的", "项目", "耳号/笼号", "房间/架位", "负责人", "状态", "备注"], rows);
+  } else if (kind === "breeding") {
+    name = `繁育台账-${stamp}.csv`;
+    const rows = sortBy(filterBreeding(), ui.sort.breeding, BREED_SORT).map(r => [
+      r.code, r.strain, r.father, r.mother, r.paired, r.pregCheck, r.born, r.pups, r.weanedDate, r.weanedCount,
+      r.destCages, r.destPerCage, r.purpose, r.project, r.room, r.keeper, r.status || "配对中", r.note
+    ]);
+    csv = toCSV(["配对编号", "品系", "父本耳号", "母本耳号", "合笼日期", "孕检日期", "出生日期", "窝仔数", "断奶日期", "断奶只数", "分笼笼数", "分笼只数/笼", "实验目的", "项目", "房间/架位", "负责人", "状态", "备注"], rows);
   } else if (kind === "reagents") {
     name = `试剂库存-${stamp}.csv`;
-    csv = toCSV(["名称", "货号", "品牌", "规格", "类别", "库存", "单位", "库存下限", "存放位置", "开封日期", "有效期至", "剩余天数", "供应商", "备注"],
-      filterStock("reagents").map(r => [r.name, r.catNo, r.brand, r.spec, r.category, r.qty, r.unit, r.min, r.location, r.openDate,
-        r.expiry, r.expiry ? dayDiff(r.expiry) : "", r.supplier, r.note]));
+    csv = toCSV(["名称", "货号", "品牌", "规格", "类别", "库存", "单位", "库存下限", "单价", "存放位置", "开封日期", "有效期至", "剩余天数", "供应商", "备注"],
+      filterStock("reagents").map(r => [r.name, r.catNo, r.brand, r.spec, r.category, r.qty, r.unit, r.min, r.unitPrice,
+        r.location, r.openDate, r.expiry, r.expiry ? dayDiff(r.expiry) : "", r.supplier, r.note]));
   } else if (kind === "consumables") {
     name = `耗材库存-${stamp}.csv`;
-    csv = toCSV(["名称", "规格", "库存", "单位", "安全库存", "存放位置", "供应商", "备注"],
-      filterStock("consumables").map(r => [r.name, r.spec, r.qty, r.unit, r.min, r.location, r.supplier, r.note]));
+    csv = toCSV(["名称", "规格", "库存", "单位", "安全库存", "单价", "存放位置", "供应商", "备注"],
+      filterStock("consumables").map(r => [r.name, r.spec, r.qty, r.unit, r.min, r.unitPrice, r.location, r.supplier, r.note]));
   } else if (kind === "logs") {
     name = `出入库流水-${stamp}.csv`;
-    csv = toCSV(["日期", "类型", "物品", "动作", "数量", "单位", "操作人", "备注"],
-      filterLogs().map(l => [l.date, l.kind === "reagents" ? "试剂" : "耗材", l.itemName, l.action, l.qty, l.unit, l.operator, l.note]));
-  }
+    csv = toCSV(["日期", "类型", "物品", "动作", "数量", "单位", "单价", "金额", "项目", "操作人", "备注"],
+      filterLogs().map(l => [l.date, l.kind === "reagents" ? "试剂" : "耗材", l.itemName, l.action, l.qty, l.unit, l.unitPrice, l.amount, l.project, l.operator, l.note]));
+  } else if (kind === "reorder") {
+    const stock = ui.view === "consumables" ? "consumables" : "reagents";
+    name = `补货清单-${stamp}.csv`;
+    csv = toCSV(["名称", "品牌", "货号", "规格", "单位", "当前库存", "日均消耗", "可用天数", "建议补货量", "供应商", "存放位置", "备注"],
+      reorderList(stock).map(({ r, u }) => [r.name, r.brand, r.catNo, r.spec, r.unit, num(r.qty),
+        u.day ? nf2(u.day) : "", u.daysLeft === null ? "" : Math.max(0, Math.floor(u.daysLeft)),
+        u.day ? suggestQty(u) : "", r.supplier, r.location, r.note]));
+  } else return;
   download(csv, name, "text/csv;charset=utf-8");
   toast("已导出 " + name);
 }
 
+/* ============================== JSON 备份 / 恢复 ============================== */
+function backupJSON() {
+  const stamp = todayStr().replace(/-/g, "");
+  download(JSON.stringify(state, null, 2), `实验室管理备份-${stamp}.json`, "application/json");
+  toast("备份已下载");
+}
 function importJSON(file) {
   if (!file) return;
   const fr = new FileReader();
   fr.onload = () => {
     try {
       const o = JSON.parse(fr.result);
-      if (!o || typeof o !== "object" || (!Array.isArray(o.mice) && !Array.isArray(o.reagents) && !Array.isArray(o.consumables)))
-        throw new Error("不是本工具的备份文件");
-      const n = (o.mice || []).length + (o.reagents || []).length + (o.consumables || []).length;
-      if (!confirm(`即将用备份覆盖当前数据（小鼠 ${(o.mice || []).length} 条 / 试剂 ${(o.reagents || []).length} 条 / 耗材 ${(o.consumables || []).length} 条）。\n当前数据会被替换，建议先导出一次备份。继续？`)) return;
-      state = {
-        mice: o.mice || [], reagents: o.reagents || [], consumables: o.consumables || [], logs: o.logs || [],
-        settings: Object.assign(blankState().settings, o.settings || {}), meta: { v: 1, updated: Date.now() }
-      };
-      save(); render(); toast(`恢复成功，共 ${n} 条记录`);
+      const looksOk = o && typeof o === "object" && (Array.isArray(o.mice) || Array.isArray(o.reagents) || Array.isArray(o.consumables) || Array.isArray(o.breeding));
+      if (!looksOk) throw new Error("不是本工具的备份文件");
+      const n = (o.mice || []).length + (o.reagents || []).length + (o.consumables || []).length + (o.breeding || []).length;
+      if (!confirm(`即将用备份覆盖当前数据（小鼠 ${(o.mice || []).length} / 繁育 ${(o.breeding || []).length} / 试剂 ${(o.reagents || []).length} / 耗材 ${(o.consumables || []).length}）。\n当前数据会先放进撤销栈，可用 Ctrl+Z 回退。继续？`)) return;
+      pushUndo("从 JSON 恢复");
+      state = migrate(o);
+      save();
+      render();
+      toast(`恢复成功，共 ${n} 条记录`);
     } catch (e) { toast("导入失败：" + e.message, true); }
     finally { const i = $("#fileImport"); if (i) i.value = ""; }
   };
   fr.readAsText(file, "utf-8");
 }
 
-function clearAll() {
-  if (!confirm("确定清空全部数据？\n小鼠、试剂、耗材、流水都会删除。建议先导出 JSON 备份。")) return;
-  if (!confirm("再确认一次：删了就找不回来了，真的清空？")) return;
-  state = blankState(); save(); render(); toast("已清空");
+/* ============================== 表格导入（Excel / CSV 粘贴） ============================== */
+let importState = { kind: "mice", records: [], dups: 0, skipped: 0, headers: [], error: "" };
+
+const IMPORT_ALIAS = {
+  mice: {
+    strain: ["品系", "strain", "品系名称"], sex: ["性别", "sex"], ageWeeks: ["周龄", "ageweeks", "周龄（周）"],
+    dob: ["出生日期", "dob", "出生", "生日"], cages: ["笼数", "笼子数量", "cages", "笼"],
+    perCage: ["只数/笼", "只数每笼", "percage", "per_cage", "每笼只数"], purpose: ["实验目的", "purpose", "目的"],
+    project: ["项目", "项目/课题", "project", "课题"], earTag: ["耳号/笼号", "耳号", "笼号", "eartag", "ear_tag"],
+    room: ["房间/架位", "房间", "架位", "room"], keeper: ["负责人", "keeper", "饲养人"],
+    status: ["状态", "status"], note: ["备注", "note"]
+  },
+  breeding: {
+    code: ["配对编号", "编号", "code"], strain: ["品系", "strain"], father: ["父本耳号", "父本", "father"],
+    mother: ["母本耳号", "母本", "mother"], paired: ["合笼日期", "合笼", "paired", "配种日期"],
+    pregCheck: ["孕检日期", "孕检", "pregcheck"], born: ["出生日期", "出生", "born"],
+    pups: ["窝仔数", "仔数", "pups"], weanedDate: ["断奶日期", "断奶", "weaneddate"],
+    weanedCount: ["断奶只数", "weanedcount"], destCages: ["分笼笼数", "destcages"],
+    destPerCage: ["分笼只数/笼", "destpercage"], purpose: ["实验目的", "目的", "去 向", "purpose"],
+    project: ["项目", "项目/课题", "project"], room: ["房间/架位", "房间", "架位", "room"],
+    keeper: ["负责人", "keeper"], status: ["状态", "status"], note: ["备注", "note"]
+  },
+  reagents: {
+    name: ["试剂名称", "名称", "name"], catNo: ["货号", "catno", "cat_no"], brand: ["品牌", "brand"],
+    spec: ["规格", "spec"], category: ["类别", "category", "分类"], qty: ["库存数量", "库存", "qty", "数量"],
+    unit: ["单位", "unit"], min: ["库存下限", "下限", "min", "安全库存"], unitPrice: ["单价", "unitprice", "unit_price", "单价（元/单位）"],
+    location: ["存放位置", "位置", "location"], openDate: ["开封日期", "opendate"], expiry: ["有效期至", "有效期", "expiry", "到期日"],
+    supplier: ["供应商", "supplier"], note: ["备注", "note"]
+  },
+  consumables: {
+    name: ["耗材名称", "名称", "name"], spec: ["规格", "spec"], qty: ["库存数量", "库存", "qty"],
+    unit: ["单位", "unit"], min: ["安全库存", "下限", "min"], unitPrice: ["单价", "unitprice"],
+    location: ["存放位置", "位置", "location"], supplier: ["供应商", "supplier"], note: ["备注", "note"]
+  }
+};
+const DUP_KEY = {
+  mice: r => [r.strain, r.purpose, r.earTag, r.cages, r.perCage].join("|"),
+  breeding: r => [r.code, r.strain, r.paired].join("|"),
+  reagents: r => [r.name, r.catNo, r.spec, r.location].join("|"),
+  consumables: r => [r.name, r.spec, r.location].join("|")
+};
+const normHeader = h => String(h || "").toLowerCase().replace(/[（(].*?[）)]/g, "").replace(/[\s_\-／/]/g, "");
+function headerToKey(kind, h) {
+  const n = normHeader(h);
+  if (!n) return null;
+  const map = IMPORT_ALIAS[kind] || {};
+  for (const k in map) if (map[k].some(a => normHeader(a) === n)) return k;
+  return null;
+}
+function splitDelimited(line, d) {
+  const out = [];
+  let cur = "", quoted = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (quoted) {
+      if (c === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else quoted = false; }
+      else cur += c;
+    } else if (c === '"') quoted = true;
+    else if (c === d) { out.push(cur); cur = ""; }
+    else cur += c;
+  }
+  out.push(cur);
+  return out.map(s => s.trim());
+}
+function parseTable(text) {
+  const lines = String(text || "").replace(/\r\n?/g, "\n").split("\n").filter(l => l.trim() !== "");
+  if (!lines.length) return [];
+  const head = lines[0];
+  const tabs = (head.match(/\t/g) || []).length;
+  const commas = (head.match(/,/g) || []).length;
+  const semis = (head.match(/;/g) || []).length;
+  const d = tabs >= commas && tabs >= semis ? "\t" : (semis > commas ? ";" : ",");
+  return lines.map(l => splitDelimited(l, d));
 }
 
-function loadDemo() {
-  if (state.mice.length + state.reagents.length + state.consumables.length > 0 &&
+function buildImport(kind, rows) {
+  const out = { kind, records: [], dups: 0, skipped: 0, headers: [], error: "" };
+  if (!rows.length) { out.error = "没有内容：先粘贴表格或选择文件"; return out; }
+  const map = rows[0].map(h => headerToKey(kind, h));
+  out.headers = map;
+  if (!map.some(Boolean)) { out.error = "没认出表头：第一行需要是列名（例如 品系 / 笼数 / 只数/笼）"; return out; }
+  const req = SCHEMA[kind].filter(f => f.req).map(f => f.k);
+  const dupKeys = new Set(state[kind].map(r => DUP_KEY[kind](r)));
+  rows.slice(1).forEach(cells => {
+    const obj = {};
+    map.forEach((k, i) => { if (k && cells[i] !== undefined) obj[k] = cells[i]; });
+    const hasValue = Object.values(obj).some(v => String(v ?? "").trim() !== "");
+    if (!hasValue) return;
+    const rec = normalizeRecord(kind, obj);
+    if (req.some(k => rec[k] === "" || rec[k] === null || rec[k] === undefined)) { out.skipped++; return; }
+    if (kind === "mice" && totalMice(rec) <= 0) { out.skipped++; return; }
+    if (dupKeys.has(DUP_KEY[kind](rec))) out.dups++;
+    out.records.push(rec);
+  });
+  return out;
+}
+
+function importPreviewHTML() {
+  const st = importState;
+  if (st.error) return `<div class="tag bad">${esc(st.error)}</div>`;
+  if (!st.records.length) return '<div class="muted">还没有解析结果。粘贴表格后点「解析预览」。</div>';
+  const cols = SCHEMA[st.kind].slice(0, 6);
+  const rows = st.records.slice(0, 8).map(r => `<tr>${cols.map(f => `<td>${esc(cut(r[f.k] ?? "", 24)) || '<span class="muted">—</span>'}</td>`).join("")}</tr>`).join("");
+  return `<div class="tag info">解析到 ${st.records.length} 条${st.skipped ? `<span class="tag warn" style="margin-left:6px">跳过 ${st.skipped} 条（缺必填 / 只数为 0）</span>` : ""}${st.dups ? `<span class="tag warn" style="margin-left:6px">疑似重复 ${st.dups} 条</span>` : ""}</div>
+    <div class="tablewrap" style="max-height:240px;margin-top:8px">
+      <table><thead><tr>${cols.map(f => `<th>${esc(f.l)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table>
+    </div>
+    <div class="muted" style="margin-top:6px">预览前 8 条；确认导入会追加到现有数据（不会覆盖）。</div>`;
+}
+
+function previewImport() {
+  const text = $("#imp-text") ? $("#imp-text").value : "";
+  const kind = $("#imp-kind") ? $("#imp-kind").value : importState.kind;
+  importState = buildImport(kind, parseTable(text));
+  const box = $("#imp-preview");
+  if (box) box.innerHTML = importPreviewHTML();
+  if (importState.error) toast(importState.error, true);
+  else if (!importState.records.length) toast("没有可导入的行，检查表头和内容", true);
+}
+
+function readImportFile(file) {
+  if (!file) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    const ta = $("#imp-text");
+    if (ta) ta.value = String(fr.result || "");
+    previewImport();
+    const i = $("#impFile");
+    if (i) i.value = "";
+  };
+  fr.readAsText(file, "utf-8");
+}
+
+function doImport() {
+  const st = importState;
+  if (!st.records.length) { toast("先点「解析预览」，确认能认出表头", true); return; }
+  if (st.dups && !confirm(`有 ${st.dups} 条看起来和现有记录重复，仍然全部导入？`)) return;
+  pushUndo(`导入${KIND_LABEL[st.kind]} ${st.records.length} 条`);
+  state[st.kind] = st.records.concat(state[st.kind]);
+  save();
+  const n = st.records.length;
+  importState = { kind: st.kind, records: [], dups: 0, skipped: 0, headers: [], error: "" };
+  render();
+  toast(`已导入 ${n} 条${KIND_LABEL[st.kind]}记录`);
+}
+
+/* ============================== 其他操作 ============================== */
+function clearAll() {
+  if (!confirm("确定清空全部数据？\n小鼠、繁育、试剂、耗材、流水都会删除（可用 Ctrl+Z 撤销）。")) return;
+  if (!confirm("再确认一次：真的清空？")) return;
+  pushUndo("清空全部数据");
+  state = blankState();
+  save();
+  render();
+  toast("已清空，Ctrl+Z 可撤销");
+}
+
+function loadDemo(silent) {
+  if (!silent && state.mice.length + state.reagents.length + state.consumables.length + state.breeding.length > 0 &&
     !confirm("示例数据会追加到现有数据后面（不会删除已有内容）。继续？")) return;
+  if (!silent) pushUndo("载入示例数据");
   const t = todayStr();
-  const d8 = new Date(Date.now() - 8 * 7 * 864e5).toLocaleDateString("sv-SE");
-  const d20 = new Date(Date.now() - 20 * 7 * 864e5).toLocaleDateString("sv-SE");
+  const d8 = addDays(t, -56), d20 = addDays(t, -140);
+  const mk = (kind, o) => Object.assign({ id: uid(), createdAt: new Date().toISOString() }, normalizeRecord(kind, o));
   state.mice.push(
-    { id: uid(), strain: "C57BL/6J", sex: "雄", cages: 6, perCage: 5, dob: d8, purpose: "MC38 荷瘤模型，观察 21 天肿瘤生长", project: "PD-1 联合治疗", earTag: "1-6 号笼", room: "SPF-2 A3 架", keeper: "", status: "在养", note: "", createdAt: new Date().toISOString() },
-    { id: uid(), strain: "BALB/c", sex: "雌", cages: 4, perCage: 5, ageWeeks: 8, ageDate: t, purpose: "药物毒性预实验（对照 + 低/中/高剂量）", project: "小分子安全性评价", earTag: "7-10 号笼", room: "SPF-2 A4 架", keeper: "", status: "在养", note: "", createdAt: new Date().toISOString() },
-    { id: uid(), strain: "NOD-SCID", sex: "雌", cages: 2, perCage: 4, ageWeeks: 6, ageDate: d20, purpose: "人源 PBMC 移植（Hu-Mice）", project: "免疫重建", room: "SPF-3 B1 架", status: "在养", note: "需无菌操作", createdAt: new Date().toISOString() }
+    mk("mice", { strain: "C57BL/6J", sex: "雄", cages: 6, perCage: 5, dob: d8, purpose: "MC38 荷瘤模型，观察 21 天肿瘤生长", project: "PD-1 联合治疗", earTag: "1-6 号笼", room: "SPF-2 A3 架", keeper: "", status: "在养", note: "" }),
+    mk("mice", { strain: "BALB/c", sex: "雌", cages: 4, perCage: 5, ageWeeks: 8, ageDate: t, purpose: "药物毒性预实验（对照 + 低/中/高剂量）", project: "小分子安全性评价", earTag: "7-10 号笼", room: "SPF-2 A4 架", keeper: "", status: "在养", note: "" }),
+    mk("mice", { strain: "NOD-SCID", sex: "雌", cages: 2, perCage: 4, ageWeeks: 6, ageDate: d20, purpose: "人源 PBMC 移植（Hu-Mice）", project: "免疫重建", room: "SPF-3 B1 架", status: "在养", note: "需无菌操作" })
+  );
+  state.breeding.push(
+    mk("breeding", { code: "B26-01", strain: "C57BL/6J", father: "M-11", mother: "F-07", paired: addDays(t, -12), pregCheck: addDays(t, -6), born: "", pups: null, purpose: "繁育保种，断奶后转荷瘤组", project: "PD-1 联合治疗", room: "SPF-2 A1 架", keeper: "", status: "怀孕", note: "" }),
+    mk("breeding", { code: "B26-02", strain: "BALB/c", father: "M-03", mother: "F-12", paired: addDays(t, -26), pregCheck: addDays(t, -20), born: addDays(t, -16), pups: 7, weanedDate: "", weanedCount: null, destCages: 2, destPerCage: 4, purpose: "断奶后转毒性预实验", project: "小分子安全性评价", room: "SPF-2 A2 架", status: "哺乳", note: "即将断奶" })
   );
   state.reagents.push(
-    { id: uid(), name: "Anti-mouse PD-1 (RMP1-14)", catNo: "BE0146", brand: "BioXCell", spec: "100 mg", category: "抗体", qty: 2, unit: "支", min: 1, location: "-20℃ B-1", openDate: "", expiry: new Date(Date.now() + 12 * 864e5).toLocaleDateString("sv-SE"), supplier: "代理商 A", note: "体内用，勿反复冻融", createdAt: new Date().toISOString() },
-    { id: uid(), name: "RPMI-1640 培养基", catNo: "11875093", brand: "Gibco", spec: "500 mL", category: "培养基", qty: 1, unit: "瓶", min: 2, location: "4℃ 冰箱 A-2", expiry: new Date(Date.now() + 200 * 864e5).toLocaleDateString("sv-SE"), supplier: "本地代理", note: "", createdAt: new Date().toISOString() },
-    { id: uid(), name: "Mouse IFN-γ ELISA Kit", catNo: "MIF00", brand: "R&D", spec: "96 T", category: "试剂盒", qty: 1, unit: "盒", min: 1, location: "4℃ 冰箱 A-1", expiry: new Date(Date.now() - 5 * 864e5).toLocaleDateString("sv-SE"), supplier: "", note: "已过期，待处理", createdAt: new Date().toISOString() }
+    mk("reagents", { name: "Anti-mouse PD-1 (RMP1-14)", catNo: "BE0146", brand: "BioXCell", spec: "100 mg", category: "抗体", qty: 2, unit: "支", min: 1, unitPrice: 3200, location: "-20℃ B-1", openDate: "", expiry: addDays(t, 12), supplier: "代理商 A", note: "体内用，勿反复冻融" }),
+    mk("reagents", { name: "RPMI-1640 培养基", catNo: "11875093", brand: "Gibco", spec: "500 mL", category: "培养基", qty: 1, unit: "瓶", min: 2, unitPrice: 260, location: "4℃ 冰箱 A-2", expiry: addDays(t, 200), supplier: "本地代理", note: "" }),
+    mk("reagents", { name: "Mouse IFN-γ ELISA Kit", catNo: "MIF00", brand: "R&D", spec: "96 T", category: "试剂盒", qty: 1, unit: "盒", min: 1, unitPrice: 1800, location: "4℃ 冰箱 A-1", expiry: addDays(t, -5), supplier: "", note: "已过期，待处理" })
   );
   state.consumables.push(
-    { id: uid(), name: "10 µL 无菌吸头", spec: "96 支/盒", qty: 8, unit: "盒", min: 5, location: "耗材柜 2 层", supplier: "Axygen", note: "", createdAt: new Date().toISOString() },
-    { id: uid(), name: "6 孔细胞培养板", spec: "50 个/箱", qty: 1, unit: "箱", min: 2, location: "耗材柜 3 层", supplier: "Corning", note: "", createdAt: new Date().toISOString() }
+    mk("consumables", { name: "10 µL 无菌吸头", spec: "96 支/盒", qty: 8, unit: "盒", min: 5, unitPrice: 45, location: "耗材柜 2 层", supplier: "Axygen", note: "" }),
+    mk("consumables", { name: "6 孔细胞培养板", spec: "50 个/箱", qty: 1, unit: "箱", min: 2, unitPrice: 380, location: "耗材柜 3 层", supplier: "Corning", note: "" }),
+    mk("consumables", { name: "胎牛血清 FBS（50 mL 分装）", spec: "50 mL/支", qty: 2, unit: "支", min: 1, unitPrice: 320, location: "-20℃ C-2", supplier: "Gibco", note: "分装后避免反复冻融" })
   );
-  save(); render(); toast("示例数据已载入，可直接改成自己的");
+
+  /* 示例流水：让「近 30 天出入库」「日均消耗 / 可用天数」「补货建议」有内容可看 */
+  const lg = (kind, item, action, qty, daysAgo, project, operator, note) => {
+    const d = addDays(t, -daysAgo);
+    const price = numOrNull(item.unitPrice);
+    state.logs.push({
+      id: uid(), ts: new Date(d + "T09:00:00").getTime(), date: d, kind,
+      itemId: item.id, itemName: item.name, unit: item.unit || "", action, qty,
+      unitPrice: price, amount: price === null ? null : Math.round(qty * price * 100) / 100,
+      project: project || "", operator: operator || "", note: note || ""
+    });
+  };
+  const [re1, re2, re3] = state.reagents, [co1, co2, co3] = state.consumables;
+  lg("reagents", re1, "入库", 2, 40, "PD-1 联合治疗", "本人", "首批到货");
+  lg("reagents", re1, "出库", 0.5, 18, "PD-1 联合治疗", "本人", "第 1 次给药");
+  lg("reagents", re2, "入库", 1, 25, "小分子安全性评价", "本人", "");
+  lg("reagents", re2, "出库", 1, 8, "小分子安全性评价", "本人", "换液");
+  lg("reagents", re3, "出库", 1, 2, "免疫重建", "本人", "过期前用掉一部分");
+  lg("consumables", co1, "出库", 3, 20, "PD-1 联合治疗", "本人", "铺板");
+  lg("consumables", co1, "入库", 4, 5, "PD-1 联合治疗", "本人", "补货");
+  lg("consumables", co2, "出库", 1, 3, "小分子安全性评价", "本人", "");
+  [58, 48, 38, 28, 18, 8].forEach(d => lg("consumables", co3, "出库", 1, d, "免疫重建", "本人", "每周换液分装"));
+
+  if (silent) return;   // 演示模式：调用方统一 render，且不写盘
+  save();
+  render();
+  toast("示例数据已载入，可直接改成自己的");
 }
 
-/* ================= 路由 ================= */
-const TITLES = {
-  dash: ["概览", "小鼠总量 · 品系分布 · 库存预警"],
-  mice: ["小鼠统计", "品系 / 周龄 / 笼数 / 只数·笼 / 实验目的"],
-  reagents: ["试剂库存", "库存 · 位置 · 有效期"],
-  consumables: ["耗材库存", "库存 · 安全库存"],
-  logs: ["出入库流水", "所有试剂与耗材变动记录"],
-  data: ["数据备份", "导出 · 恢复 · 设置"]
-};
-function setView(v) {
-  ui.view = v;
-  document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("active", b.dataset.view === v));
-  render();
+/* ============================== 主题（浅色 / 深色 / 跟随系统） ============================== */
+const THEMES = ["auto", "light", "dark"];
+const THEME_LABEL = { auto: "跟随系统", light: "浅色", dark: "深色" };
+let themeMode = (() => {
+  try {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (THEMES.indexOf(saved) >= 0) return saved;
+  } catch (e) { /* 隐私模式读不到 localStorage 也没关系 */ }
+  return THEMES.indexOf(state.settings.theme) >= 0 ? state.settings.theme : "auto";
+})();
+const prefersDark = () => !!(window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+function applyTheme() {
+  const dark = themeMode === "dark" || (themeMode === "auto" && prefersDark());
+  document.documentElement.dataset.theme = dark ? "dark" : "light";
+  document.documentElement.style.colorScheme = dark ? "dark" : "light";
+  const b = $("#btn-theme");
+  if (b) {
+    b.textContent = themeMode === "auto" ? "🌓" : dark ? "🌙" : "☀️";
+    b.title = `主题：${THEME_LABEL[themeMode]}（点击切换）`;
+  }
 }
+function cycleTheme() {
+  themeMode = THEMES[(THEMES.indexOf(themeMode) + 1) % THEMES.length];
+  try { localStorage.setItem(THEME_KEY, themeMode); } catch (e) { /* ignore */ }
+  state.settings.theme = themeMode;   // 跟着 JSON 备份走，换机器也能带上
+  save();
+  applyTheme();
+  toast("主题：" + THEME_LABEL[themeMode]);
+}
+
+/* ============================== 路由 / 启动 ============================== */
+const TITLES = {
+  dash: ["概览", "小鼠总量 · 繁育节点 · 库存预警"],
+  mice: ["小鼠统计", "品系 / 周龄 / 笼数 / 只数·笼 / 实验目的"],
+  breeding: ["繁育台账", "配对 · 孕检 · 出生 · 断奶 / 转小鼠"],
+  reagents: ["试剂库存", "库存 · 位置 · 有效期 · 成本"],
+  consumables: ["耗材库存", "库存 · 安全库存 · 成本"],
+  logs: ["出入库流水", "变动记录 · 项目成本"],
+  data: ["数据 · 设置", "备份 · 导入导出 · 参数"]
+};
+const VIEWS = {
+  dash: viewDash, mice: viewMice, breeding: viewBreeding,
+  reagents: () => viewStock("reagents"),
+  consumables: () => viewStock("consumables"),
+  logs: viewLogs, data: viewData
+};
+
+function setView(v) {
+  if (!VIEWS[v]) v = "dash";
+  ui.view = v;
+  $$("#nav button").forEach(b => b.classList.toggle("active", b.dataset.view === v));
+  render();
+  window.scrollTo(0, 0);
+}
+
 function render() {
-  const [t, s] = TITLES[ui.view] || TITLES.dash;
-  $("#viewTitle").innerHTML = `${esc(t)}<span>${esc(s)}</span>`;
-  $("#topActions").innerHTML = "";
-  ({
-    dash: viewDash, mice: viewMice, reagents: () => viewStock("reagents"),
-    consumables: () => viewStock("consumables"), logs: viewLogs, data: viewData
-  })[ui.view]();
+  const meta = TITLES[ui.view] || TITLES.dash;
+  $("#viewTitle").innerHTML = `${esc(meta[0])}<span>${esc(meta[1])}</span>`;
+  $("#content").onclick = null;
+  (VIEWS[ui.view] || viewDash)();
+  paintUndo();
   paintSaveInfo();
 }
 
-/* ================= 启动 ================= */
+/* 表头排序（事件委托，切视图也不会失效） */
+document.getElementById("content").addEventListener("click", e => {
+  const th = e.target.closest("th[data-sort]");
+  if (!th) return;
+  const key = th.dataset.sort;
+  const cur = ui.sort[ui.view];
+  ui.sort[ui.view] = cur && cur.k === key ? { k: key, dir: -cur.dir } : { k: key, dir: 1 };
+  render();
+});
+
 document.getElementById("nav").addEventListener("click", e => {
-  const b = e.target.closest("button[data-view]"); if (!b) return;
-  ui.cat = "all"; ui.logKind = "all";
+  const b = e.target.closest("button[data-view]");
+  if (!b) return;
+  ui.cat = "all";
+  ui.logKind = "all";
+  ui.logProject = "all";
   setView(b.dataset.view);
 });
+
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape" && !$("#modal").classList.contains("hidden")) closeModal();
-  if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && !$("#modal").classList.contains("hidden")) {
-    const f = $("#mForm"); if (f) f.requestSubmit();
+  const modalOpen = !$("#modal").classList.contains("hidden");
+  const mod = e.ctrlKey || e.metaKey;
+  if (e.key === "Escape" && modalOpen) closeModal();
+  if (mod && e.key === "Enter" && modalOpen) { const f = $("#mForm"); if (f) f.requestSubmit(); }
+  if (mod && !e.shiftKey && String(e.key).toLowerCase() === "z" && !modalOpen) { e.preventDefault(); undo(); }
+  if (mod && String(e.key).toLowerCase() === "k") {
+    e.preventDefault();
+    const s = document.querySelector("#content .search");
+    if (s) { s.focus(); s.select(); }
   }
 });
 $("#modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
-
-if (!state.meta.updated && !state.mice.length && !state.reagents.length && !state.consumables.length) {
-  // 首次打开：直接展示示例，让用户知道怎么填
-  setTimeout(() => { if (confirm("第一次打开，要不要先载入一份示例数据（可随时删除）？\n选“取消”则从空白开始。")) loadDemo(); }, 300);
+$("#btn-theme").onclick = cycleTheme;
+applyTheme();
+if (window.matchMedia) {
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  if (mq.addEventListener) mq.addEventListener("change", () => { if (themeMode === "auto") applyTheme(); });
 }
+
+/* 演示模式：带 ?demo 打开时载入示例数据，只读不存 */
+if (DEMO) {
+  const bar = $("#demoBar");
+  if (bar) {
+    bar.style.display = "";
+    bar.innerHTML = "🔎 <b>演示模式</b>：下面是示例数据，所有改动都不会保存到本机。" +
+      "把 <code>index.html</code> 下载下来双击打开，就能录入自己的数据（只存在你自己的浏览器里）。" +
+      '<a href="?" style="margin-left:6px">退出演示</a>';
+  }
+  loadDemo(true);
+}
+
 render();
 paintSaveInfo();
+
 </script>
 </body>
 </html>
