@@ -63,6 +63,14 @@ fs.mkdirSync(DATA_DIR, { recursive: true });
 const store = new Store(DATA_DIR);
 const auth = new Auth(DATA_DIR, { adminPassword: process.env.ADMIN_PASSWORD || "" });
 
+/* 启动时清理超过保留期的回收站记录（软删除的墓碑） */
+try {
+  const pruned = store.pruneTombstones();
+  if (pruned) console.log(`[store] 回收站已清理 ${pruned} 条超期记录`);
+} catch (e) {
+  console.error("[store] 回收站清理失败：" + e.message);
+}
+
 if (process.argv.includes("--reset-admin")) {
   const admin = auth.users.find(u => u.role === "admin");
   if (!admin) { console.error("没有管理员账号，直接删掉 data/users.json 重新启动即可。"); process.exit(1); }

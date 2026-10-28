@@ -205,7 +205,51 @@ function createApi(ctx) {
         if (r.touched) {
           store.audit({ user: user.username, ip, action: "sync", detail: summary, rev: r.rev });
         }
-        json(res, 200, { rev: r.rev, applied: r.touched, changes: r.changes });
+        if (r.conflicts && r.conflicts.length) {
+          store.audit({
+            user: user.username, ip, action: "conflict",
+            detail: r.conflicts.map(c => `${c.coll}/${c.id}`).join(","), rev: r.rev
+          });
+        }
+        json(res, 200, { rev: r.rev, applied: r.touched, changes: r.changes, conflicts: r.conflicts || [] });
+        return true;
+      }
+
+      /* ---------- 回收站：软删除记录的查看 / 恢复 / 彻底删除（仅管理员） ---------- */
+      if (pathname === "/api/trash" && method === "GET") {
+        if (!can(user, "backup")) { json(res, 403, { error: "只有管理员能查看回收站" }); return true; }
+        const limit = Math.min(1000, Math.max(1, Number(url.searchParams.get("limit")) || 200));
+        json(res, 200, { items: store.listTombstones(limit), stats: store.stats() });
+        return true;
+      }
+
+      if (pathname === "/api/restore" && method === "POST") {
+        if (!can(user, "backup")) { json(res, 403, { error: "只有管理员能恢复记录" }); return true; }
+        const body = await readBody(req, MAX_BODY);
+        const r = store.restore(user, String(body.coll || ""), body.ids);
+        if (!r.ok) { json(res, 400, { error: r.error }); return true; }
+        if (r.restored) {
+          store.audit({
+            user: user.username, ip, action: "restore", rev: r.rev,
+            detail: `${body.coll} × ${r.restored}`
+          });
+        }
+        json(res, 200, { ok: true, restored: r.restored, rev: r.rev, changes: r.changes });
+        return true;
+      }
+
+      if (pathname === "/api/purge" && method === "POST") {
+        if (!can(user, "backup")) { json(res, 403, { error: "只有管理员能彻底删除记录" }); return true; }
+        const body = await readBody(req, MAX_BODY);
+        const r = store.purge(user, String(body.coll || ""), body.ids);
+        if (!r.ok) { json(res, 400, { error: r.error }); return true; }
+        if (r.purged) {
+          store.audit({
+            user: user.username, ip, action: "purge", rev: r.rev,
+            detail: `${body.coll} × ${r.purged}（不可恢复）`
+          });
+        }
+        json(res, 200, { ok: true, purged: r.purged, rev: r.rev });
         return true;
       }
 

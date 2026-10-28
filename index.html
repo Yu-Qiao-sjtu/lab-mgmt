@@ -653,7 +653,7 @@ function showAuth(opts) {
       <p class="auth-sub">第一次登录必须改密码：初始密码是管理员给的，别人也知道，不能继续用。</p>
       <form id="authForm" autocomplete="off">
         <label>原密码（管理员给的）<input type="password" id="authOld" required autocomplete="current-password"></label>
-        <label>新密码（至少 8 位）<input type="password" id="authNew" required autocomplete="new-password"></label>
+        <label>新密码（至少 6 位，需含大写字母 + 数字 + 特殊符号）<input type="password" id="authNew" required autocomplete="new-password"></label>
         <label>再输一次<input type="password" id="authNew2" required autocomplete="new-password"></label>
         <button class="btn primary" type="submit">${o.busy ? "提交中…" : "保存并进入"}</button>
         <div class="auth-err" id="authErr">${esc(err)}</div>
@@ -794,7 +794,7 @@ function sessionLost() {
 function changeMyPassword() {
   const oldPw = prompt("当前密码：");
   if (oldPw === null) return;
-  const a = prompt("新密码（至少 8 位）：");
+  const a = prompt("新密码（至少 6 位，需含大写字母 + 数字 + 特殊符号）：");
   if (a === null) return;
   const b = prompt("再输一次新密码：");
   if (b === null) return;
@@ -974,7 +974,7 @@ function viewUsers() {
         <form id="newUserForm" class="toolbar" autocomplete="off">
           <input class="search" id="nu-user" placeholder="用户名（登录用，字母/数字）" required>
           <input class="search" id="nu-name" placeholder="姓名（显示用，可不填）">
-          <input class="search" id="nu-pw" type="password" placeholder="初始密码（至少 8 位）" required>
+          <input class="search" id="nu-pw" type="password" placeholder="初始密码（至少 6 位，需含大写 + 数字 + 符号）" required>
           <select id="nu-role">
             <option value="editor">实验员（录入 / 编辑 / 删除）</option>
             <option value="viewer">只读（只能看和导出）</option>
@@ -1064,7 +1064,7 @@ function renderUsers(stats) {
     if (!b) return;
     const uid = b.dataset.uid;
     if (b.dataset.act === "u-reset") {
-      const pw = prompt(`把 ${b.dataset.name} 的密码重置成什么？（至少 8 位；对方下次登录会被要求改）`);
+      const pw = prompt(`把 ${b.dataset.name} 的密码重置成什么？（至少 6 位，需含大写 + 数字 + 符号；对方下次登录会被要求改）`);
       if (!pw) return;
       await userPatch(uid, { password: pw, mustChange: true }, "密码已重置");
     }

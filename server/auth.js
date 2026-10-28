@@ -24,7 +24,12 @@ const PERM = {
 const SESSION_DAYS = 7;
 const MAX_FAILS = 6;
 const LOCK_MS = 5 * 60 * 1000;
-const MIN_PASSWORD = 8;
+const MIN_PASSWORD = 6;   // 最少 6 位
+const PW_RULES = [
+  [/[A-Z]/, "密码必须包含至少 1 个大写字母"],
+  [/[0-9]/, "密码必须包含至少 1 个数字"],
+  [/[^A-Za-z0-9]/, "密码必须包含至少 1 个特殊符号（如 !@#$%^&*）"]
+];
 
 function hashPassword(pw) {
   const salt = crypto.randomBytes(16).toString("hex");
@@ -55,6 +60,7 @@ function passwordProblem(pw, username) {
   const s = String(pw || "");
   if (s.length < MIN_PASSWORD) return `密码至少 ${MIN_PASSWORD} 位`;
   if (s.length > 200) return "密码太长";
+  for (const [re, msg] of PW_RULES) if (!re.test(s)) return msg;
   if (username && s.toLowerCase() === String(username).toLowerCase()) return "密码不能和用户名相同";
   if (/^(12345678|password|admin123|11111111|00000000)$/i.test(s)) return "这个密码太常见，换一个";
   return "";
@@ -300,4 +306,4 @@ class Auth {
   }
 }
 
-module.exports = { Auth, PERM, ROLES, ROLE_LABEL, hashPassword, verifyPassword };
+module.exports = { Auth, PERM, ROLES, ROLE_LABEL, hashPassword, verifyPassword, passwordProblem };

@@ -8,9 +8,12 @@
  *
  * 多人并发的处理原则：
  *   1. 每条记录独立更新（按 id 合并），不是整库覆盖；
- *   2. 同一条记录两人同时改 → 后写入的生效（last-write-wins），
- *      但每条记录都打上 _by / _at，审计里能查到最后是谁改的；
- *   3. 客户端断线很久后回来，变更日志已过期 → 自动整体刷新。
+ *   2. 每条记录带 _v 版本号（每次写入 +1）与 _by / _at 来源信息；
+ *      客户端回传的 _v 与服务端不一致 → 判为冲突，拒绝覆盖并回给前端，
+ *      不再静默 last-write-wins（参考 MuriArc 的 revision 校验）；
+ *   3. 删除是软删除：打 deletedAt / deletedBy 保留墓碑，管理员可恢复；
+ *      墓碑超过 TOMBSTONE_DAYS 天由 pruneTombstones() 物理清理；
+ *   4. 客户端断线很久后回来，变更日志已过期 → 自动整体刷新。
  * ========================================================================== */
 const fs = require("fs");
 const path = require("path");
@@ -19,6 +22,7 @@ const COLLS = ["mice", "breeding", "reagents", "consumables", "logs"];
 const MAX_CHANGES = 4000;
 const MAX_BACKUPS = 30;
 const AUDIT_ROTATE_BYTES = 5 * 1024 * 1024;
+const TOMBSTONE_DAYS = 90;   // 软删除记录的保留期，超期物理清理
 
 function blankData() {
   return {
@@ -33,6 +37,14 @@ function blankData() {
 
 const clone = o => JSON.parse(JSON.stringify(o));
 const dayStamp = d => d.toLocaleDateString("sv-SE").replace(/-/g, "");
+const live = r => !!r && !r.deletedAt;   // 未软删除的“活”记录
+
+/* 只把活记录交出去；墓碑留在库里给管理员恢复 */
+function liveData(data) {
+  const out = clone(data);
+  COLLS.forEach(c => { if (Array.isArray(out[c])) out[c] = out[c].filter(live); });
+  return out;
+}
 
 /* 只保留普通字段：挡掉原型污染和超大字段 */
 function sanitize(value, depth = 0) {
@@ -105,7 +117,7 @@ class Store {
   }
 
   get rev() { return this.db.rev; }
-  snapshot() { return { rev: this.db.rev, data: clone(this.db.data) }; }
+  snapshot() { return { rev: this.db.rev, data: liveData(this.db.data) }; }
 
   /* 每日备份：当天还没备过就备一份，并清理超过 30 天的 */
   _dailyBackup() {
@@ -154,6 +166,7 @@ class Store {
   applyPatch(user, patch, opts) {
     const allowSettings = !!(opts && opts.allowSettings);
     const changes = [];
+    const conflicts = [];
     let touched = 0;
 
     for (const coll of COLLS) {
@@ -161,33 +174,54 @@ class Store {
       if (!p || typeof p !== "object") continue;
       const arr = this.db.data[coll];
 
-      // 先删，再写，避免下标错位
+      const idx = new Map();
+      arr.forEach((r, i) => { if (r && r.id) idx.set(r.id, i); });
+
+      // 先删（软删除：保留墓碑，可恢复），再写，避免下标错位
       const dels = Array.isArray(p.del) ? p.del.slice(0, 2000) : [];
       dels.forEach(id => {
         if (typeof id !== "string") return;
-        const i = arr.findIndex(r => r && r.id === id);
-        if (i >= 0) {
-          arr.splice(i, 1);
-          changes.push({ coll, id, del: true });
-          touched++;
-        }
+        const i = idx.get(id);
+        if (i === undefined) return;
+        const rec = arr[i];
+        if (rec.deletedAt) return;                       // 已是墓碑，幂等
+        rec.deletedAt = Date.now();
+        rec.deletedBy = user.name || user.username;
+        rec._v = (Number(rec._v) || 0) + 1;
+        rec._by = rec.deletedBy;
+        rec._at = rec.deletedAt;
+        changes.push({ coll, id, del: true });
+        touched++;
       });
 
       const ups = Array.isArray(p.up) ? p.up.slice(0, 2000) : [];
-      const idx = new Map();
-      arr.forEach((r, i) => { if (r && r.id) idx.set(r.id, i); });
       ups.forEach(raw => {
         if (!raw || typeof raw !== "object") return;
         const rec = sanitize(raw);
         if (!rec || typeof rec.id !== "string" || !rec.id) return;
+        const i = idx.get(rec.id);
+        const cur = i === undefined ? null : arr[i];
+        const hasV = Number.isFinite(Number(rec._v)) && rec._v !== null && rec._v !== "";
+        const clientV = hasV ? Number(rec._v) : null;
+        const serverV = cur ? (Number(cur._v) || 0) : 0;
+        // 乐观锁：客户端基于旧版本改 → 拒绝覆盖，交给前端提示刷新
+        if (cur && clientV !== null && clientV !== serverV) {
+          conflicts.push({
+            coll, id: rec.id, serverV, clientV,
+            by: cur._by || "", at: cur._at || null, deleted: !!cur.deletedAt
+          });
+          return;
+        }
+        rec._v = serverV + 1;
         rec._by = user.name || user.username;
         rec._at = Date.now();
-        const i = idx.get(rec.id);
-        if (i === undefined) {
+        delete rec.deletedAt;
+        delete rec.deletedBy;
+        if (cur) {
+          arr[i] = rec;
+        } else {
           arr.push(rec);
           idx.set(rec.id, arr.length - 1);
-        } else {
-          arr[i] = rec;
         }
         changes.push({ coll, id: rec.id, rec });
         touched++;
@@ -202,16 +236,16 @@ class Store {
       touched++;
     }
 
-    if (!touched) return { rev: this.db.rev, changes: [], touched: 0 };
+    if (!touched) return { rev: this.db.rev, changes: [], conflicts, touched: 0 };
     const rev = this._bump(changes);
-    return { rev, changes, touched };
+    return { rev, changes, conflicts, touched };
   }
 
   changesSince(since) {
     const s = Number(since) || 0;
     if (s >= this.db.rev) return { rev: this.db.rev, changes: [] };
     const oldest = this.db.changes.length ? this.db.changes[0].rev : this.db.rev + 1;
-    if (s < oldest - 1) return { full: true, rev: this.db.rev, data: clone(this.db.data) };
+    if (s < oldest - 1) return { full: true, rev: this.db.rev, data: liveData(this.db.data) };
     return { rev: this.db.rev, changes: this.db.changes.filter(c => c.rev > s) };
   }
 
@@ -258,15 +292,84 @@ class Store {
 
   stats() {
     const d = this.db.data;
+    const n = c => (Array.isArray(d[c]) ? d[c].filter(live).length : 0);
+    const trash = c => (Array.isArray(d[c]) ? d[c].filter(r => r && r.deletedAt).length : 0);
     return {
       rev: this.db.rev,
       counts: {
-        mice: d.mice.length, breeding: d.breeding.length, reagents: d.reagents.length,
-        consumables: d.consumables.length, logs: d.logs.length
+        mice: n("mice"), breeding: n("breeding"), reagents: n("reagents"),
+        consumables: n("consumables"), logs: n("logs")
+      },
+      deleted: {
+        mice: trash("mice"), breeding: trash("breeding"), reagents: trash("reagents"),
+        consumables: trash("consumables"), logs: trash("logs")
       },
       bytes: Buffer.byteLength(JSON.stringify(d), "utf8"),
       savedAt: this.db.savedAt
     };
+  }
+
+  /* ---------- 回收站：软删除记录的查看 / 恢复 / 彻底删除 ---------- */
+  listTombstones(limit = 200) {
+    const out = [];
+    for (const coll of COLLS) {
+      const arr = this.db.data[coll];
+      if (!Array.isArray(arr)) continue;
+      arr.filter(r => r && r.deletedAt).forEach(r => {
+        out.push({ coll, record: clone(r) });
+      });
+    }
+    out.sort((a, b) => (b.record.deletedAt || 0) - (a.record.deletedAt || 0));
+    return out.slice(0, limit);
+  }
+
+  /* 恢复：清掉墓碑标记，版本号 +1，重新广播一条 up 变更 */
+  restore(user, coll, ids) {
+    if (COLLS.indexOf(coll) < 0) return { ok: false, error: "集合不存在" };
+    const arr = this.db.data[coll];
+    const want = new Set((Array.isArray(ids) ? ids : []).filter(id => typeof id === "string"));
+    const changes = [];
+    const at = Date.now();
+    const who = user.name || user.username;
+    arr.forEach(r => {
+      if (!r || !r.deletedAt || !want.has(r.id)) return;
+      delete r.deletedAt;
+      delete r.deletedBy;
+      r._v = (Number(r._v) || 0) + 1;
+      r._by = who;
+      r._at = at;
+      changes.push({ coll, id: r.id, rec: clone(r) });
+    });
+    if (!changes.length) return { ok: true, restored: 0, rev: this.db.rev, changes: [] };
+    const rev = this._bump(changes);
+    return { ok: true, restored: changes.length, rev, changes };
+  }
+
+  /* 彻底删除：物理移除，不可恢复（仅管理员） */
+  purge(user, coll, ids) {
+    if (COLLS.indexOf(coll) < 0) return { ok: false, error: "集合不存在" };
+    const want = new Set((Array.isArray(ids) ? ids : []).filter(id => typeof id === "string"));
+    const before = this.db.data[coll].length;
+    this.db.data[coll] = this.db.data[coll].filter(r => !(r && r.deletedAt && want.has(r.id)));
+    const removed = before - this.db.data[coll].length;
+    if (!removed) return { ok: true, purged: 0, rev: this.db.rev };
+    const rev = this._bump([{ coll, id: "*", purged: removed }]);
+    return { ok: true, purged: removed, rev };
+  }
+
+  /* 墓碑保留期清理：超过 TOMBSTONE_DAYS 天物理删除 */
+  pruneTombstones(days = TOMBSTONE_DAYS) {
+    const cut = Date.now() - days * 86400000;
+    let removed = 0;
+    for (const coll of COLLS) {
+      const arr = this.db.data[coll];
+      if (!Array.isArray(arr)) continue;
+      const keep = arr.filter(r => !(r && r.deletedAt && r.deletedAt < cut));
+      removed += arr.length - keep.length;
+      this.db.data[coll] = keep;
+    }
+    if (removed) this._persist();
+    return removed;
   }
 }
 
