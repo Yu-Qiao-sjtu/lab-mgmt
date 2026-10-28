@@ -272,6 +272,17 @@ async function flush(keepalive) {
       toast("保存失败：" + lastSyncErr, true);
       return false;
     }
+    if (j.conflicts && j.conflicts.length) {
+      // 这些记录别人先改过：服务端保住了对方版本，本地这次没有写入
+      const n = j.conflicts.length;
+      const who = [...new Set(j.conflicts.map(c => c.by).filter(Boolean))].join("、");
+      REV = j.rev;
+      lastSyncAt = Date.now();
+      lastSyncErr = `冲突 ${n} 条`;
+      toast(`${who ? who + " " : ""}刚改过这 ${n} 条记录，已载入最新版本，请重新编辑`, true);
+      await pullAll();
+      return false;
+    }
     REV = j.rev;
     SYNCED = snap;                 // 注意：用发送前的快照，避免把服务端的 _by 当成"又改了"
     lastSyncAt = Date.now();
@@ -284,6 +295,20 @@ async function flush(keepalive) {
     syncing = false;
     paintSaveInfo();
   }
+}
+
+/* 冲突后整库重拉：服务端版本为准，避免本地反复用旧 _v 重试 */
+async function pullAll() {
+  try {
+    const r = await fetch("/api/changes?since=0");
+    if (r.status === 401) { sessionLost(); return; }
+    const j = await r.json().catch(() => null);
+    if (!j || !j.data) return;
+    state = migrate(j.data);
+    REV = j.rev;
+    SYNCED = snapshotOf(state);
+    render();
+  } catch (e) { /* 网络抖动：下次轮询再拉 */ }
 }
 
 function applyChanges(list) {

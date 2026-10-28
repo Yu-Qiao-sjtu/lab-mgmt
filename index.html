@@ -837,6 +837,17 @@ async function flush(keepalive) {
       toast("保存失败：" + lastSyncErr, true);
       return false;
     }
+    if (j.conflicts && j.conflicts.length) {
+      // 这些记录别人先改过：服务端保住了对方版本，本地这次没有写入
+      const n = j.conflicts.length;
+      const who = [...new Set(j.conflicts.map(c => c.by).filter(Boolean))].join("、");
+      REV = j.rev;
+      lastSyncAt = Date.now();
+      lastSyncErr = `冲突 ${n} 条`;
+      toast(`${who ? who + " " : ""}刚改过这 ${n} 条记录，已载入最新版本，请重新编辑`, true);
+      await pullAll();
+      return false;
+    }
     REV = j.rev;
     SYNCED = snap;                 // 注意：用发送前的快照，避免把服务端的 _by 当成"又改了"
     lastSyncAt = Date.now();
@@ -849,6 +860,20 @@ async function flush(keepalive) {
     syncing = false;
     paintSaveInfo();
   }
+}
+
+/* 冲突后整库重拉：服务端版本为准，避免本地反复用旧 _v 重试 */
+async function pullAll() {
+  try {
+    const r = await fetch("/api/changes?since=0");
+    if (r.status === 401) { sessionLost(); return; }
+    const j = await r.json().catch(() => null);
+    if (!j || !j.data) return;
+    state = migrate(j.data);
+    REV = j.rev;
+    SYNCED = snapshotOf(state);
+    render();
+  } catch (e) { /* 网络抖动：下次轮询再拉 */ }
 }
 
 function applyChanges(list) {
@@ -966,6 +991,66 @@ const fmtTime = t => {
   return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
 };
 
+const COLL_TEXT = { mice: "小鼠", breeding: "繁育", reagents: "试剂", consumables: "耗材", logs: "流水" };
+function recLabel(r) {
+  return r.name || r.code || r.title || r.no || r.sn || r.id;
+}
+async function loadTrash() {
+  const box = $("#trashRows");
+  if (!box) return;
+  try {
+    const r = await fetch("/api/trash?limit=200");
+    if (!r.ok) { box.innerHTML = `<div class="muted">读取失败（HTTP ${r.status}）</div>`; return; }
+    const j = await r.json();
+    renderTrash(j.items || []);
+  } catch (e) { box.innerHTML = '<div class="muted">连不上服务器</div>'; }
+}
+function renderTrash(items) {
+  const box = $("#trashRows");
+  if (!box) return;
+  const cnt = $("#tCount");
+  if (cnt) cnt.textContent = items.length ? `${items.length} 条待处理` : "删除的记录保留 90 天，可恢复";
+  if (!items.length) { box.innerHTML = '<div class="muted">回收站是空的</div>'; return; }
+  box.innerHTML = `<div class="tablewrap"><table>
+    <thead><tr><th>类型</th><th>记录</th><th>删除人</th><th>删除时间</th><th>操作</th></tr></thead>
+    <tbody>${items.map(it => {
+    const r = it.record || {};
+    return `<tr>
+        <td>${esc(COLL_TEXT[it.coll] || it.coll)}</td>
+        <td><b>${esc(String(recLabel(r)))}</b><div class="muted" style="font-size:11px">${esc(r.id)}</div></td>
+        <td>${esc(r.deletedBy || "—")}</td>
+        <td class="nowrap">${esc(fmtTime(r.deletedAt))}</td>
+        <td class="nowrap">
+          <button class="btn mini" data-act="t-restore" data-coll="${esc(it.coll)}" data-id="${esc(r.id)}">恢复</button>
+          <button class="btn mini danger" data-act="t-purge" data-coll="${esc(it.coll)}" data-id="${esc(r.id)}">彻底删除</button>
+        </td></tr>`;
+  }).join("")}</tbody></table></div>`;
+  box.onclick = async e => {
+    const b = e.target.closest("button[data-act]");
+    if (!b) return;
+    const coll = b.dataset.coll, id = b.dataset.id;
+    const post = (u, body) => fetch(u, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+    if (b.dataset.act === "t-restore") {
+      const r = await post("/api/restore", { coll, ids: [id] });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { toast(j.error || "恢复失败", true); return; }
+      if (j.rev) REV = j.rev;
+      toast("已恢复");
+      await pullAll();
+      loadTrash();
+    }
+    if (b.dataset.act === "t-purge") {
+      if (!confirm("彻底删除后无法恢复，确定？")) return;
+      const r = await post("/api/purge", { coll, ids: [id] });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { toast(j.error || "删除失败", true); return; }
+      if (j.rev) REV = j.rev;
+      toast("已彻底删除");
+      loadTrash();
+    }
+  };
+}
+
 function viewUsers() {
   $("#content").innerHTML = `
     <div class="panel">
@@ -993,6 +1078,10 @@ function viewUsers() {
     <div class="panel">
       <h3>账号列表 <em id="uCount"></em></h3>
       <div class="body" id="userRows"><div class="muted">加载中…</div></div>
+    </div>
+    <div class="panel">
+      <h3>回收站 <em id="tCount">删除的记录保留 90 天，可恢复</em></h3>
+      <div class="body" id="trashRows"><div class="muted">加载中…</div></div>
     </div>`;
 
   $("#newUserForm").onsubmit = async e => {
@@ -1012,6 +1101,7 @@ function viewUsers() {
     loadUsers();
   };
   loadUsers();
+  loadTrash();
 }
 
 async function loadUsers() {
